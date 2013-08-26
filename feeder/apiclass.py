@@ -1,11 +1,11 @@
-import os
 import json
 import requests
 from datetime import datetime
 from billy.multiset import Multiset
 
-include = lambda f: os.path.exists(f) and execfile(f)
-include('settings.py')
+
+execfile('settings.py')
+
 
 def getInventory(steamid):
     get = {

@@ -26,7 +26,7 @@ for id in delete:
     id = str(id)
     print i, id, "deleted"
     #call api to add items to the items inventory
-    print call_api('DELETE', 'inv/ItemInventory/' + id + '/')
+    print apiclass.call_api('DELETE', 'inv/ItemInventory/' + id + '/')
     i += 1
 
 i = 1    
@@ -37,5 +37,5 @@ for item in add:
     'steamid':steamid,
     'itemname':item
     }
-    print call_api('POST', 'inv/ItemInventory/', data=post).text
+    print apiclass.call_api('POST', 'inv/ItemInventory/', data=post).text
     i += 1
