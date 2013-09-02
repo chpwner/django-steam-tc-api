@@ -3,7 +3,7 @@ import requests
 from datetime import datetime
 from billy.multiset import Multiset
 
-
+#grab passwords from this file, hidden from github
 execfile('settings.py')
 
 
@@ -23,7 +23,7 @@ def invDiff(old, new):
     temp = []
     temp2 = []
     for item in old:
-        temp.append(item['catkey'])
+        temp.append(item['itemname'])
     for item in new:
         temp2.append(item['catkey'])
         
@@ -38,9 +38,9 @@ def invDiff(old, new):
 
     deleteops = []
     for item in old:
-        if item['catkey'] in delete:
+        if item['itemname'] in delete:
             deleteops.append(item['id'])
-            delete.remove(item['catkey'])
+            delete.remove(item['itemname'])
     
     print "which means you need to delete", len(deleteops), "ids"
     print deleteops

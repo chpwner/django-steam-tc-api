@@ -60,4 +60,4 @@ class BadgeInventory(models.Model):
             flag = " (Foil)"
         else:
             flag = ""
-        return str(self.appid) + flag
+        return str(self.appid) + flag + " (Lvl:" + str(self.level) + ")"

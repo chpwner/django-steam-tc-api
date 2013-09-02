@@ -53,7 +53,7 @@ for game in games:
     'catkey':steamid + appid
     }
     print apiclass.addGameInventory(post)
-    """
+
     print
     query = steamclass.doMarketQuery(name, 'trading card')
     print
@@ -86,4 +86,4 @@ for game in games:
         'trading_card':'on',
         'price':price
         }
-        print apiclass.updateItem(catkey, post)"""
+        print apiclass.updateItem(catkey, post)
