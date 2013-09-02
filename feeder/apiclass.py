@@ -9,7 +9,7 @@ execfile('settings.py')
 
 def getInventory(steamid):
     get = {
-    'steamid':steamid
+    'steamid':steamid,
     }
     ret = call_api('GET', 'inv/ItemInventory/', params=get)
     jsontxt = ret.text
@@ -23,9 +23,9 @@ def invDiff(old, new):
     temp = []
     temp2 = []
     for item in old:
-        temp.append(item['itemname'])
+        temp.append(item['catkey'])
     for item in new:
-        temp2.append(item['itemname'])
+        temp2.append(item['catkey'])
         
     set1 = Multiset(temp)
     set2 = Multiset(temp2)
@@ -38,9 +38,9 @@ def invDiff(old, new):
 
     deleteops = []
     for item in old:
-        if item['itemname'] in delete:
+        if item['catkey'] in delete:
             deleteops.append(item['id'])
-            delete.remove(item['itemname'])
+            delete.remove(item['catkey'])
     
     print "which means you need to delete", len(deleteops), "ids"
     print deleteops

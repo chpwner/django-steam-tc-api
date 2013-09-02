@@ -37,6 +37,7 @@ for game in games:
     appid = game['appid']
     gamearr.append(appid)
 
+    print "adding", name
     #call api to add Games
     post = {
     'appid':appid, 
@@ -44,11 +45,15 @@ for game in games:
     }
     print apiclass.addGame(post)
     
+    print "inventorying",name
     #call api to add to game inventory
-    post['steamid'] = steamid
-    post['catkey'] = steamid + appid
+    post = {
+    'appid':name, #override with name primary key
+    'steamid':steamid,
+    'catkey':steamid + appid
+    }
     print apiclass.addGameInventory(post)
-    
+    """
     print
     query = steamclass.doMarketQuery(name, 'trading card')
     print
@@ -56,12 +61,17 @@ for game in games:
     for dic in query:
         item = dic['item'] #str
         type = dic['type'] #str
+        game = dic['game'] #str
         price = dic['price'] #float
+        
+        catkey = item + type
         
         #call api to add items to the items database
         post = {
+        'catkey':catkey,
         'itemname':item,
         'itemtype':type,
+        'game':game,
         'trading_card':'on',
         'price':price
         }
@@ -69,9 +79,11 @@ for game in games:
         
         #call api to update the items database
         post = {
+        'catkey':catkey,
         'itemname':item,
         'itemtype':type,
+        'game':game,
         'trading_card':'on',
         'price':price
         }
-        print apiclass.updateItem(item, post)
+        print apiclass.updateItem(catkey, post)"""

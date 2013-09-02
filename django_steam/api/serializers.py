@@ -1,50 +1,57 @@
+import sys
 from django.contrib.auth.models import User, Group
 from rest_framework import serializers
 from api.models import *
 
-#serializes are optional apparently
-class UserSerializer(serializers.HyperlinkedModelSerializer):
+#fields in serializes are optional apparently
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('url', 'username', 'email', 'groups')
+        fields = ('username', 'email', 'groups')
 
-
-class GroupSerializer(serializers.HyperlinkedModelSerializer):
+class GroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
-        fields = ('url', 'name')
+        fields = ('name')
         
-class PlayerSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Players
-        #fields = ('steamid', 'personaname', 'avatar')
-        
-class GameSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Games
-        #fields = ('appid', 'name')
-        
+#Steam stuff
 class ItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = Items
-        #fields = ('itemname', 'itemtype', 'trading_card', 'price', 'updated')
+        fields = ('catkey', 'itemname', 'itemtype', 'game', 'trading_card', 'price', 'updated')
+        #depth = 1
+        
+class GameSerializer(serializers.ModelSerializer):
+    cards = serializers.RelatedField(many=True, read_only=True)
+    class Meta:
+        model = Games
+        fields = ('appid', 'name', 'cards')
+        #depth = 1
+
+class PlayerSerializer(serializers.ModelSerializer):
+    games = serializers.RelatedField(many=True, read_only=True)
+    badges = serializers.RelatedField(many=True, read_only=True)
+    items = serializers.RelatedField(many=True, read_only=True)
+    class Meta:
+        model = Players
+        fields = ('steamid', 'personaname', 'avatar', 'games', 'badges', 'items')
+        #depth = 1
         
 class GameInvSerializer(serializers.ModelSerializer):
     class Meta:
         model = GameInventory
-        #fields = ('catkey', 'steamid', 'appid')
+        fields = ('catkey', 'steamid', 'appid')
+        #depth = 1
         
 class ItemInvSerializer(serializers.ModelSerializer):
     class Meta:
         model = ItemInventory
-        #fields = ('steamid', 'itemname')
-        
-class ItemInvSerializerID(serializers.ModelSerializer):
-    class Meta:
-        model = ItemInventory
-        #fields = ('id', 'steamid', 'itemname')
+        fields = ('id', 'steamid', 'itemname')
+        #depth = 1
         
 class BadgeInvSerializer(serializers.ModelSerializer):
+    #appid = serializers.RelatedField() crappy serilizers don't work I hate them
     class Meta:
         model = BadgeInventory
-        #fields = ('catkey', 'steamid', 'appid', 'badgeid', 'foiled', 'level')
+        fields = ('catkey', 'steamid', 'appid', 'badgeid', 'foiled', 'level')
+        #depth = 1

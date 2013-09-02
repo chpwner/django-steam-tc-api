@@ -81,6 +81,7 @@ def getPlayerInventory(steamid):
         classid = item['classid']
         name = item['market_name']
         gametype = item['type']
+        game = item['tags'][0]['name']
 
         if gametype.find('Trading Card') > -1:
             cardflag = 'on'
@@ -88,8 +89,10 @@ def getPlayerInventory(steamid):
             cardflag = ''
             
         names[classid] = {
+        'catkey':name+gametype,
         'itemname':name,
         'itemtype':gametype,
+        'game':game,
         'trading_card':cardflag,
         'price':0, #cannot get price here
         'updated':datetime.now()
@@ -240,7 +243,7 @@ def doMarketQuery(name, append):
         #check to see if query result is in fact for the game selected on player profile
         if game == name + " Trading Card" or game == name + " Foil Trading Card":
             print "++" + item + " is of type " + game + " and costs $" + price
-            retval.append({'item':item,'type':game,'price':float(price)})
+            retval.append({'item':item,'type':game, 'game':name, 'price':float(price)})
         else:
             #print "--" + item + " is of type " + game + " and not of type " + name
             pass

@@ -8,19 +8,25 @@ class Players(models.Model):
         return self.personaname
 
 class Games(models.Model):
-    appid = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=100)
+    appid = models.IntegerField(unique=True)
+    name = models.CharField(max_length=100, primary_key=True)
     def __unicode__(self):
         return self.name
 	
 class Items(models.Model):
-    itemname = models.CharField(primary_key=True, max_length=100)
+    catkey = models.CharField(max_length=200, primary_key=True)
+    itemname = models.CharField(max_length=100)
     itemtype = models.CharField(max_length=100)
+    game = models.ForeignKey('Games', related_name='cards')
     trading_card = models.BooleanField()
     price = models.FloatField()
     updated = models.DateTimeField()
     def __unicode__(self):
-        return self.itemname
+        if (self.price == 0):
+            flag = ""
+        else:
+            flag = str(self.price)
+        return self.itemname + " ($" + flag + ")"
 
 
 #this class is somewhat irrelevant since the badge name cannot be accessed	
@@ -31,17 +37,27 @@ class Items(models.Model):
 	
 class GameInventory(models.Model):
     catkey = models.CharField(primary_key=True, max_length=100)
-    steamid = models.ForeignKey('Players')
-    appid = models.ForeignKey('Games')
+    steamid = models.ForeignKey('Players', related_name='games')
+    appid = models.ForeignKey('Games', related_name='games')
+    def __unicode__(self):
+        return str(self.appid)
 	
 class ItemInventory(models.Model):
-    steamid = models.ForeignKey('Players')
-    itemname = models.ForeignKey('Items')
+    steamid = models.ForeignKey('Players', related_name='items')
+    itemname = models.ForeignKey('Items', related_name='items')
+    def __unicode__(self):
+        return str(self.itemname)
 	
 class BadgeInventory(models.Model):
     catkey = models.CharField(primary_key=True, max_length=100)
-    steamid = models.ForeignKey('Players')
-    appid = models.ForeignKey('Games')
+    steamid = models.ForeignKey('Players', related_name='badges')
+    appid = models.ForeignKey('Games', to_field='appid', related_name='badges')
     badgeid = models.IntegerField()
     foiled = models.IntegerField()
     level = models.IntegerField()
+    def __unicode__(self):
+        if (self.foiled == 1):
+            flag = " (Foil)"
+        else:
+            flag = ""
+        return str(self.appid) + flag

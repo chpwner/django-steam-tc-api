@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import sys
 import apiclass
 import steamclass
 
@@ -12,11 +13,6 @@ postDic = getstuff[0]
 badgeDic = getstuff[1]
 badgeDic2 = getstuff[2]
 
-for post in postDic:
-    print apiclass.addBadge(post)
-    print apiclass.updateBadge(post['catkey'], post)
-
-###################the rest of this optional#######################
 games = steamclass.getPlayerGames(steamid)
 
 print "you own", len(games), "games"
@@ -35,7 +31,17 @@ for game in games:
     if appid in badgeDic:
         print i, "your game", name, "is at level", badgeDic[appid]
         i += 1
+        for post in postDic:
+            if (post['appid'] == appid):
+                post['appid'] = name
+                print apiclass.addBadge(post)
+                print apiclass.updateBadge(post['catkey'], post)
         
     if appid in badgeDic2:
         print i, "your game", name, "(FOIL) is at level", badgeDic2[appid]
         i += 1
+        for post in postDic:
+            if (post['appid'] == appid):
+                post['appid'] = name
+                print apiclass.addBadge(post)
+                print apiclass.updateBadge(post['catkey'], post)
