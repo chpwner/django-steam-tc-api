@@ -6,9 +6,9 @@ import apiclass
 
 #set steamid
 #me
-steamid = "76561197991459756"
+#steamid = "76561197991459756"
 #rizzo
-#steamid = "76561197970539274"
+steamid = "76561197970539274"
 
 player = steamclass.getPlayerInfo(steamid)
 

@@ -1,11 +1,13 @@
 #!/usr/bin/python
 
-import sys
+#import sys
 import apiclass
 import steamclass
 
 #select steam ID
-steamid = "76561197991459756"
+#steamid = "76561197991459756"
+#rizzo
+steamid = "76561197970539274"
 
 getstuff = steamclass.getPlayerBadges(steamid)
 

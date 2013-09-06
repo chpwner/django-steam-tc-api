@@ -1,11 +1,13 @@
 #!/usr/bin/python
 
-import sys
+#import sys
 import steamclass
 import apiclass
 
 #enter steam id
 steamid = "76561197991459756"
+#rizzo
+#steamid = "76561197970539274"
 
 #add items to the items db
 itemDic = steamclass.getPlayerInventory(steamid)

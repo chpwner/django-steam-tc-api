@@ -1,3 +1,4 @@
+import json
 from django.db import models
 
 class Players(models.Model):
@@ -22,11 +23,21 @@ class Items(models.Model):
     price = models.FloatField()
     updated = models.DateTimeField()
     def __unicode__(self):
-        if (self.price == 0):
-            flag = ""
-        else:
-            flag = str(self.price)
-        return self.itemname + " ($" + flag + ")"
+        retval = {
+        "itemname":self.itemname,
+        "itemtype":self.itemtype,
+        "trading_card":self.trading_card,
+        "price":self.price,
+        "updated":self.updated.strftime("%I:%M:%S %p %x")
+        }
+
+        return json.dumps(retval)
+
+        #if (self.price == 0):
+        #    flag = ""
+        #else:
+        #    flag = str(self.price)
+        #return self.itemname + " ($" + flag + ")"
 
 
 #this class is somewhat irrelevant since the badge name cannot be accessed	
