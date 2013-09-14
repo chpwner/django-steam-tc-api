@@ -25,7 +25,7 @@ class GameViewSet(viewsets.ModelViewSet):
 class ItemViewSet(viewsets.ModelViewSet):
     queryset = Items.objects.all()
     serializer_class = ItemSerializer
-    filter_fields = ('itemname', 'itemtype', 'trading_card', 'price')
+    filter_fields = ('itemname', 'itemtype', 'game', 'trading_card', 'price')
 
 class GameInvViewSet(viewsets.ModelViewSet):
     queryset = GameInventory.objects.all()

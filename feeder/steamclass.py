@@ -196,14 +196,16 @@ def doMarketQuery(name, append):
     retval = []
     #checks for unicode errors
     try:
-        query = urllib.urlencode({'query' : name + append, 'start' : 0, 'count' : 25})
+        safe = name.encode('utf-8')
+        query = urllib.urlencode({'query': safe + append, 'start':0, 'count':50})
     except UnicodeEncodeError:
         print name + " had a unicode encode error"
         query = ''
     
     t1 = datetime.now()
     print "running steam market call on", name + append, "please wait..."
-    URL = urllib.urlopen("http://steamcommunity.com/market/search/render/?%s" % query)
+
+    URL = urllib.urlopen("http://steamcommunity.com/market/search/render/?start=0&count=50&query="+query)
     #convert json object, essentially a count and html output
     result = json.load(URL) 
     print "done with market call", datetime.now() - t1
@@ -245,7 +247,7 @@ def doMarketQuery(name, append):
             print "++" + item + " is of type " + game + " and costs $" + price
             retval.append({'item':item,'type':game, 'game':name, 'price':float(price)})
         else:
-            #print "--" + item + " is of type " + game + " and not of type " + name
+            print "--" + item + " is of type " + game + " and not of type " + name
             pass
    
     return retval
