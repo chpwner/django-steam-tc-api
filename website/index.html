@@ -177,12 +177,13 @@ var tr;
 var p;
 var pstore;
 function getUser(form){
+    //clear old data
+    $('#gameinfo').children().empty();
     //reset hide if applicable
     if (p){$('#toggle').trigger('click');}
-    //console.log(tr);
-    //console.log(p);
+
     //reset flags
-    $('tr.flag:not(#hr)').removeClass('flag');
+    $('#stage').children('tr.flag').removeClass('flag');
     //reset filtered games if applicable
     $('#stage').append(tr);
     
@@ -244,7 +245,7 @@ function getUser(form){
            $(game).addClass('flag');
        }
        //remove nonflagged
-       tr = $('tr:not(tr.flag)').detach();
+       tr = $('#stage').children('tr:not(tr.flag)').detach();
        //update tablesorter
        $("#datatable").trigger("update");
     })
@@ -262,10 +263,6 @@ function gameLookup(self){
     $('#gameinfo').children().empty();
     //write title
     $('#gametitle').text(gamename);
-    
-    console.log(id);
-    console.log(jd);
-    console.log(pstore);
     
     //check if profile data loaded
     if(pstore && jd.count > 0){
@@ -410,7 +407,7 @@ XD Foil: <span id="lvlFoil"></span>
 </div>
   <table class="table table-bordered table-hover tablesorter" id="datatable">
 	<thead>
-    <tr id="hr" class="flag">
+    <tr>
       <th>Appid</th>
       <th>Name</th>
 	  <th># Cards</th>
