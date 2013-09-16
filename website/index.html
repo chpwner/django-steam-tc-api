@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux/x86 (vers 25 March 2009), see www.w3.org">
+
+  <title>Steam Game Item List</title>
+  <meta name="viewport" content=
+  "width=device-width, initial-scale=1.0">
+  <link href="css/bootstrap.css" rel="stylesheet" media=
+  "screen" type="text/css">
+  <script src=
+  "//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.js"
+  type="text/javascript">
+</script>
+  <script src="js/bootstrap.js"></script>
+  <script src="js/spin.min.js"
+  type="text/javascript">
+  </script>
+<script src="js/__jquery.tablesorter.min.js" type="text/javascript"></script>
+<script type="text/javascript" language="javascript">
+//some awesome prototypes
+//super awesome numerical hash, no really a lifesaver!
+String.prototype.hashCode = function(){
+    var hash = 0, i, char;
+    if (this.length == 0) return hash;
+    for (i = 0, l = this.length; i < l; i++) {
+        char  = this.charCodeAt(i);
+        hash  = ((hash<<5)-hash)+char;
+        hash |= 0; // Convert to 32bit integer
+    }
+    return hash;
+};
+//repeatables
+String.prototype.repeat = function( num )
+{
+    var cat = this
+    for (var i = 1; i < num; i++){
+        cat = cat + cat;
+    }
+    return cat;
+}
+
+function loader() {
+    var opts = {
+        lines: 13,
+        // The number of lines to draw
+        length: 20,
+        // The length of each line
+        width: 10,
+        // The line thickness
+        radius: 30,
+        // The radius of the inner circle
+        corners: 1,
+        // Corner roundness (0..1)
+        rotate: 0,
+        // The rotation offset
+        direction: 1,
+        // 1: clockwise, -1: counterclockwise
+        color: '#000',
+        // #rgb or #rrggbb or array of colors
+        speed: 1,
+        // Rounds per second
+        trail: 60,
+        // Afterglow percentage
+        shadow: false,
+        // Whether to render a shadow
+        hwaccel: false,
+        // Whether to use hardware acceleration
+        className: 'spinner',
+        // The CSS class to assign to the spinner
+        zIndex: 2e9,
+        // The z-index (defaults to 2000000000)
+        top: '30',
+        // Top position relative to parent in px
+        left: 'auto' // Left position relative to parent in px
+    }
+    var target = document.getElementById('stage');
+    var spinner = new Spinner(opts).spin(target);
+    webstuff(spinner, function(spinner){spinner.stop();});
+}
+//globalstore
+var store = {};
+function webstuff(spinner, callback) {
+    $.getJSON('http://api.chpwner.org:82/data/Games/', function (games) {
+        var length = games.length;
+        var c = 0;
+        var ctotal = 0;
+        for (var i = 0; i < length; i++) {
+            var jd = games[i];
+            jd.idhash = 'g' + jd.name.hashCode();
+            store[jd.idhash] = jd;
+			jd.sum = 0;
+			jd.fsum = 0;
+			jd.count = 0;
+			jd.fcount = 0;
+			jd.time = 0;
+            for (var j in jd.cards) {
+                var jsonstring = jd.cards[j];
+                //console.log(jsonstring);
+                var parse = JSON.parse(jsonstring);
+                var time = "";
+                if (parse.trading_card == true && parse.itemtype.indexOf("Foil") == -1) {
+                    //override cards with price to get array of prices of cards
+                    //jd.cards[j] = parse.price;
+                    jd.time = parse.updated;
+					jd.sum = jd.sum + parse.price;
+					jd.count++;
+                }
+                else if (parse.trading_card == true && parse.itemtype.indexOf("Foil") != -1) {
+                    //override cards with price to get array of prices of cards
+                    //jd.cards[j] = "foil "+ parse.price;
+                    jd.time = parse.updated;
+					jd.fsum = jd.fsum + parse.price;
+					jd.fcount++;
+                }
+                else {
+                    //override cards with price to get array of prices of cards
+                    //jd.cards[j] = "not a card";
+                    //jd.time = parse.updated;
+                }
+            }
+			if (jd.count > 0) {
+				if (jd.count != jd.fcount){flag = ' error';}else{flag='';}
+	            $('#stage').append('<tr id="'+ jd.idhash + '" class="cardrow'+ flag +'"><td>' + jd.appid + '</td><td>' + jd.name + '</td><td>' + jd.count+ ' ' + jd.fcount + '</td><td>' + (jd.sum/jd.count).toFixed(2) + '</td><td>' + (jd.fsum/jd.fcount).toFixed(2) + '</td><td>' + jd.time + '</td><td><button type="button" class="btn btn-primary upbtn" name="update" value="'+ jd.name + '" id="'+ jd.appid + '" data-loading-text="Loading...">update</button></td><\/tr>');
+                c++;
+                ctotal = ctotal + jd.count + jd.fcount;
+			}
+            else{
+	            $('#stage').append('<tr id="'+ jd.idhash + '" class="noncardrow"><td>' + jd.appid + '</td><td>' + jd.name + '</td><td>' + jd.count+ ' ' + jd.fcount + '</td><td>' + (jd.sum/jd.count).toFixed(2) + '</td><td>' + (jd.fsum/jd.fcount).toFixed(2) + '</td><td>' + jd.time + '</td><td><button type="button" class="btn btn-primary upbtn" name="update" value="'+ jd.name + '" id="'+ jd.appid + '" data-loading-text="Loading...">update</button></td><\/tr>');
+            }
+        }
+		//table sorter
+		$("#datatable").tablesorter(); 
+		//spinner stopper callback
+        callback(spinner);
+        //some jquery setup
+        $('#searchBtn').attr('disabled', false);
+        $('#gamecount').text('Game Count: '+ length);
+        $('#itemcount').text('Card Count: ' + ctotal);
+        $('#badgecount').text('Badge Count: ' + c*2);
+        //load buttons
+        buttons();
+    }).fail(function (jqxhr, textStatus, error) {
+        spinner.stop();
+        var err = textStatus + ', ' + error;
+        $('#error').append('Request Failed ' + err);
+    })
+}
+
+function update(btn, callback){
+	var row = $(btn).parents('tr:first');
+	var del = $(btn).parent().siblings();
+	del.remove();
+	var d = new Date();
+	var n = d.getTime();
+	var gname = btn.attr('value');
+	var id = btn.attr('id');
+	row.prepend('<td>'+id+'</td><td>'+gname+'</td><td></td><td></td><td></td><td>'+n+'</td>');
+	callback(btn);
+	$("#datatable").trigger("update");
+}
+
+function validateID(InString)  {
+    if(InString.length != 17) return (false);
+    var RefString="1234567890";
+    for (Count=0; Count < InString.length; Count++)  {
+        TempChar= InString.substring (Count, Count+1);
+        if (RefString.indexOf (TempChar, 0)==-1)  
+            return (false);
+    }
+    return (true);
+}
+//globals?
+var tr;
+var p;
+var pstore;
+function getUser(form){
+    //reset hide if applicable
+    if (p){$('#toggle').trigger('click');}
+    //console.log(tr);
+    //console.log(p);
+    //reset flags
+    $('tr.flag:not(#hr)').removeClass('flag');
+    //reset filtered games if applicable
+    $('#stage').append(tr);
+    
+    var steamid = form.steamid.value;
+    form.steamid.value = "Loading...";
+    form.searchBtn.disabled = true;
+    
+    if(validateID(steamid)){
+        data = {'steamid':steamid};
+    }
+    else if (steamid != ''){
+        data = {'personaname':steamid};
+    }
+    else{
+        form.searchBtn.disabled = false;
+        form.steamid.value = "No ID entered!";
+        return('no id entered');
+    }
+    $.getJSON('http://api.chpwner.org:82/data/Players/', data, function (profile) {
+        var profile = profile[0];
+        if (!(profile))
+        {
+            form.searchBtn.disabled = false;
+            form.steamid.value = "Not Found!";
+            return('user not in database');
+        }
+        pstore = profile;
+        form.searchBtn.disabled = false;
+        form.steamid.value = "Finnished!";
+        $('#playerImage').attr('src', profile.avatar);
+        $('#playerName').text("Viewing " + profile.personaname + "'s Games");
+        $('#gamecount').text('Game Count: ' + profile.licenses.length);
+        $('#itemcount').text('Item Count: ' + profile.items.length);
+        $('#badgecount').text('Badge Count: ' + profile.badges.length);
+        var lvlArr = [0,0,0,0,0,0];
+        var foil = 0;
+        for (var i in profile.badges){
+            var badge = profile.badges[i];
+            var pos = badge.indexOf('vl:');
+            var lvl = badge.substring(pos+3,pos+4);
+            if (badge.indexOf('Foil') == -1){
+                lvlArr[lvl]++;
+            }
+            else{
+                foil++;
+            }
+        }
+       $('#lvl1').text(lvlArr[1]);
+       $('#lvl2').text(lvlArr[2]);
+       $('#lvl3').text(lvlArr[3]);
+       $('#lvl4').text(lvlArr[4]);
+       $('#lvl5').text(lvlArr[5]);
+       $('#lvlFoil').text(foil);
+       
+       //modify table
+       var len = profile.personaname.length + 3;
+       for (var j in profile.licenses){
+           var game = '#g' + profile.licenses[j].substring(len).hashCode();
+           $(game).addClass('flag');
+       }
+       //remove nonflagged
+       tr = $('tr:not(tr.flag)').detach();
+       //update tablesorter
+       $("#datatable").trigger("update");
+    })
+return (true);
+}
+
+function gameLookup(self){
+    var id = $(self).attr('id');
+    var jd = store[id];
+    var gamename = jd.name;
+    var cards = {};
+    var badgeObj = {};
+    
+    //clear old data
+    $('#gameinfo').children().empty();
+    //write title
+    $('#gametitle').text(gamename);
+    
+    console.log(id);
+    console.log(jd);
+    console.log(pstore);
+    
+    //check if profile data loaded
+    if(pstore && jd.count > 0){
+    //manipulate items to get assoc array of hashcodes
+    //for the most part json str are goning to be the same
+    //unless an update was triggered after getting composite data
+    //but before getting the profile
+    var items = pstore.items;
+    for (var i in items){
+        var jsonstring = items[i];
+        var parse = JSON.parse(jsonstring);
+        //skip nontrading cards
+        if(!(parse.trading_card)){continue;}
+        var idhash = 'hc' + parse.itemname.hashCode();
+        if (cards[idhash]){
+            cards[idhash]['quanity']++;
+        }else{
+            cards[idhash] = {'itemname':parse.itemname, 'quanity':1};
+        }
+    }
+    
+    var badges = pstore.badges;
+    for (var j in badges){
+        var badge = badges[j];
+        var pos = badge.indexOf(' (Lvl:');
+        var badgename = badge.substring(0,pos);
+        var sets = badge.substring(pos+6, pos+7)
+        var idhash = 'g' + badgename.hashCode();
+        badgeObj[idhash] = sets;
+    }
+    if (badgeObj[id]){
+        str = "player has " + badgeObj[id] + " complete set(s)" + " :) ".repeat(badgeObj[id]);
+        if (badgeObj[id] == 5){
+            str = "player has completed all 5 sets! :D"
+        }
+    }else{
+        str = "player has no complete sets :(";
+    }
+    str = str + "<br/>";
+    $('#badges').append(str);
+    
+    var fid = 'g' + (gamename + ' (Foil)').hashCode();
+    if (badgeObj[fid]){
+        str = "player has a complete FOIL set!! XD<br/>";
+    }else{
+        str = "player does not have a complete FOIL set :/<br/>";
+    }
+    $('#badges').append(str);
+    }
+    
+    for (var k in jd.cards) {
+        var jsonstring = jd.cards[k];
+        var parse = JSON.parse(jsonstring);
+        //skip nontrading cards
+        if(!(parse.trading_card)){continue;}
+        var hash = 'hc' + parse.itemname.hashCode();
+        var str = parse.itemname + ' costs ' + parse.price + ' as of ' + parse.updated + "<br/>";
+        $('#cardlist').append(str);
+        if(cards[hash]){
+            str = 'player has ' + parse.itemname + ' (' + cards[hash]['quanity'] + ')<br/>';
+            $('#inventory').append(str);
+        }
+    }
+}
+
+function buttons(){
+    //update button
+    $('.upbtn')
+      .click(function () {
+        var btn = $(this);
+        btn.button('loading');
+        update(btn, function(btn){btn.button('reset');});
+      })
+
+    //hide button
+    //var p; is global now
+    $("#toggle").click(function() {
+    if (p) {
+        console.log("unclicked");
+        p.appendTo("#stage");
+        p = null;
+        $("#datatable").trigger("update");
+        $("#toggle").text('Hide Noncard Games');
+    } else {
+        console.log("clicked");
+        p = $("tr.noncardrow").detach();
+        $("#datatable").trigger("update");
+        $("#toggle").text('Show Noncard Games');
+    }
+    });
+    
+    $('#stage').children().click(function(){gameLookup(this);});
+}
+//disable enter key so user has to click buttons
+$(document).keypress(
+    function(event){
+     if (event.which == '13') {
+        event.preventDefault();
+      }
+});
+</script>
+</head>
+<body onload="loader();">
+<div class="container">
+<div class="row">
+<div class="span2">
+<!--logo-->
+</div>
+<div class="span10">
+<!--nav-->
+</div>
+</div>
+<div class="row">
+<div class="span2" id="sidebar">
+<img id="playerImage" src="http://www.gravatar.com/avatar/9cc01cfb905ec56d582629e259f20589?s=184" class="img-rounded">
+<form>
+  Steam name or id:
+  <input type="text" class="span2" name="steamid">
+  <button type="button" class="btn" name="searchBtn" id="searchBtn" onClick="getUser(this.form)" disabled=true>Load Profile</button>
+</form>
+<p id="gamecount" class="text-right"></p>
+<p id="itemcount" class="text-right"></p>
+<p id="badgecount" class="text-right"></p>
+<p class="text-right">
+:D Lvl 5: <span id="lvl5"></span><br/>
+:) :) :) :) Lvl 4: <span id="lvl4"></span><br/>
+:) :) :) Lvl 3: <span id="lvl3"></span><br/>
+:) :) Lvl 2: <span id="lvl2"></span><br/>
+:) Lvl 1: <span id="lvl1"></span><br/>
+</p>
+<p class="text-right">
+XD Foil: <span id="lvlFoil"></span>
+</p>
+</div>
+<div class="span10">
+<div><h1 id="playerName">Viewing All Games</h1> <button type="button" id="toggle" class="btn btn-info">Hide Noncard Games</button></div>
+<div id="gameinfo">
+<p id="gametitle"></p>
+<p id="cardlist"></p>
+<p id="inventory"></p>
+<p id="badges"></p>
+</div>
+  <table class="table table-bordered table-hover tablesorter" id="datatable">
+	<thead>
+    <tr id="hr" class="flag">
+      <th>Appid</th>
+      <th>Name</th>
+	  <th># Cards</th>
+      <th>Avg card cost</th>
+      <th>Avg card cost (foil)</th>
+      <th>Last updated</th>
+	  <th></th>
+    </tr>
+	</thead>
+	<tbody id="stage">
+	</tbody>
+  </table>
+<div id="error"></div>
+</div>
+</div>
+</div>
+</body>
+</html>
