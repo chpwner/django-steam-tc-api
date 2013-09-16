@@ -34,9 +34,10 @@ String.prototype.hashCode = function(){
 //repeatables
 String.prototype.repeat = function( num )
 {
-    var cat = this
-    for (var i = 1; i < num; i++){
-        cat = cat + cat;
+    var cat = '';
+    var dog = this;
+    for (var i = 0; i < num; i++){
+        cat = cat + dog;
     }
     return cat;
 }
