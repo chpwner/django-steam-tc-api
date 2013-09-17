@@ -153,19 +153,6 @@ function webstuff(spinner, callback) {
     })
 }
 
-function update(btn, callback){
-	var row = $(btn).parents('tr:first');
-	var del = $(btn).parent().siblings();
-	del.remove();
-	var d = new Date();
-	var n = d.getTime();
-	var gname = btn.attr('value');
-	var id = btn.attr('id');
-	row.prepend('<td>'+id+'</td><td>'+gname+'</td><td></td><td></td><td></td><td>'+n+'</td>');
-	callback(btn);
-	$("#datatable").trigger("update");
-}
-
 function validateID(InString)  {
     if(InString.length != 17) return (false);
     var RefString="1234567890";
@@ -181,8 +168,12 @@ var tr;
 var p;
 var pstore;
 function getUser(form){
-    //clear old data
-    $('#gameinfo').find('tr').empty();
+    //disable some buttons
+    $('#sub').remove();
+    $('#updGames').attr('disabled',true);
+    $('#updInv').attr('disabled',true);
+    $('#updBdg').attr('disabled',true);
+    
     //reset hide if applicable
     if (p){$('#toggle').trigger('click');}
 
@@ -212,6 +203,9 @@ function getUser(form){
         {
             form.searchBtn.disabled = false;
             form.steamid.value = "Not Found!";
+            $('#userform').attr('action','adduser.php');
+            $('#userform').attr('method','post');
+            $('#userform').append('<input id="sub" class="btn btn-success" type="submit" value="Add New ID">');
             return('user not in database');
         }
         pstore = profile;
@@ -253,6 +247,11 @@ function getUser(form){
        tr = $('#stage').children('tr:not(tr.flag)').detach();
        //update tablesorter
        $("#datatable").trigger("update");
+       
+       //reenable buttons
+       $('#updGames').attr('disabled',false);
+       $('#updInv').attr('disabled',false);
+       $('#updBdg').attr('disabled',false);
     })
 return (true);
 }
@@ -367,7 +366,34 @@ function updateTable(id){
 }
 
 function buttons(){
-    //update button
+    //game info trigger
+    $('#stage').children().click(function(){gameLookup(this);});
+
+    //inventory update
+    $('#updGames')
+      .click(function () {
+        var btn = $(this);
+        btn.button('loading');
+        updateGames(btn, function(btn){btn.button('reset');});
+      })
+
+    //inventory update
+    $('#updInv')
+      .click(function () {
+        var btn = $(this);
+        btn.button('loading');
+        updateInventory(btn, function(btn){btn.button('reset');});
+      })
+      
+    //badges update
+    $('#updBdg')
+      .click(function () {
+        var btn = $(this);
+        btn.button('loading');
+        updateBadges(btn, function(btn){btn.button('reset');});
+      })
+      
+    //price update button
     $('.upbtn')
       .click(function () {
         var btn = $(this);
@@ -391,8 +417,6 @@ function buttons(){
         $("#toggle").text('Show Noncard Games');
     }
     });
-    
-    $('#stage').children().click(function(){gameLookup(this);});
 }
 //disable enter key so user has to click buttons
 $(document).keypress(
@@ -401,6 +425,30 @@ $(document).keypress(
         event.preventDefault();
       }
 });
+
+function update(btn, callback){
+    console.log("price update not implemented yet")
+    callback(btn);
+}
+
+function gameLookup(btn){
+    console.log("game detail not implemented yet");
+}
+
+function updateBadges(btn, callback){
+    console.log("updBdg not implemented yet");
+    callback(btn);
+}
+
+function updateInventory(btn, callback){
+    console.log("updInv not implemented yet");
+    callback(btn);
+}
+
+function updateGames(btn, callback){
+    console.log("updInv not implemented yet");
+    callback(btn);
+}
 </script>
 </head>
 <body onload="loader();">
@@ -416,11 +464,12 @@ $(document).keypress(
 <div class="row-fluid">
 <div class="span2" id="sidebar">
 <img id="playerImage" src="http://www.gravatar.com/avatar/9cc01cfb905ec56d582629e259f20589?s=184" class="img-rounded">
-<form>
+<form id="userform">
   Steam name or id:</br>
   <input type="text" name="steamid" class="span12"><br/>
-  <button type="button" class="btn" name="searchBtn" id="searchBtn" onClick="getUser(this.form)" disabled=true>Load Profile</button><br/>
+  <button type="button" class="btn" name="searchBtn" id="searchBtn" onClick="getUser(this.form)" disabled=true>Load Profile</button>
 </form>
+<br/>
 <p id="gamecount"></p>
 <p id="itemcount"></p>
 <p id="badgecount"></p>
@@ -432,8 +481,11 @@ Lvl 2: <span id="lvl2"></span><br/>
 Lvl 1: <span id="lvl1"></span><br/>
 </p>
 <p>
-Foil: <span id="lvlFoil"></span> XD
+Foil: <span id="lvlFoil"></span>
 </p>
+<p><button type="button" class="btn" id="updGames" data-loading-text="Loading..." disabled=true>Update Games</button></p>
+<p><button type="button" class="btn" id="updInv" data-loading-text="Loading..." disabled=true>Update Inventory</button></p>
+<p><button type="button" class="btn" id="updBdg" data-loading-text="Loading..." disabled=true>Update Badges</button></p>
 </div>
 <div class="span10">
 <div><h1 style="float:left" id="playerName">Viewing All Games</h1><div style="float:right"><button type="button" id="toggle" class="btn btn-info">Hide Noncard Games</button></div></div>
