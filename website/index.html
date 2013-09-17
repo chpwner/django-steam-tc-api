@@ -127,12 +127,12 @@ function webstuff(spinner, callback) {
             jd.ccfs = (jd.fcount * jd.favg).toFixed(2);
 			if (jd.count > 0) {
 				if (jd.count != jd.fcount){flag = ' error';}else{flag='';}
-	            $('#stage').append('<tr id="'+ jd.idhash + '" class="cardrow'+ flag +'"><td>' + jd.appid + '</td><td>' + jd.name + '</td><td>' + jd.count+ '</td><td>' + jd.fcount + '</td><td class="cardsowned">0</td><td class="percentage">0%</td><td class="badgelevel">0</td><td>' + jd.avg + '</td><td>' + jd.favg + '</td><td class="ccs">' + jd.ccs + '</td><td class="ccfs">' + jd.ccfs + '</td><td>' + jd.time + '</td><td><button type="button" class="btn btn-primary upbtn" name="update" value="'+ jd.name + '" id="'+ jd.appid + '" data-loading-text="Loading...">update</button></td><\/tr>');
+	            $('#stage').append('<tr id="'+ jd.idhash + '" class="cardrow'+ flag +'"><!--<td>' + jd.appid + '</td>--><td>' + jd.name + '</td><td>' + jd.count+ '/' + jd.fcount + '</td><td class="cardsowned">0</td><td class="fcardsowned">0</td><td class="percentage">0%</td><td class="lvl">0</td><td class="flvl">0</td><td>' + jd.avg + '</td><td>' + jd.favg + '</td><td class="ccs">' + jd.ccs + '</td><td class="ccfs">' + jd.ccfs + '</td><td>' + jd.time + '</td><td><button type="button" class="btn btn-primary upbtn" name="update" value="'+ jd.name + '" id="'+ jd.appid + '" data-loading-text="Loading...">update</button></td><\/tr>');
                 c++;
                 ctotal = ctotal + jd.count + jd.fcount;
 			}
             else{
-	            $('#stage').append('<tr id="'+ jd.idhash + '" class="noncardrow"><td>' + jd.appid + '</td><td>' + jd.name + '</td><td>' + jd.count+ '</td><td>' + jd.fcount + '</td><td class="cardsowned">0</td><td class="percentage">0%</td><td class="badgelevel">0</td><td>' + jd.avg + '</td><td>' + jd.favg + '</td><td class="ccs">' + jd.ccs + '</td><td class="ccfs">' + jd.ccfs + '</td><td>' + jd.time + '</td><td><button type="button" class="btn btn-primary upbtn" name="update" value="'+ jd.name + '" id="'+ jd.appid + '" data-loading-text="Loading...">update</button></td><\/tr>');
+	            $('#stage').append('<tr id="'+ jd.idhash + '" class="noncardrow"><!--<td>' + jd.appid + '</td>--><td>' + jd.name + '</td><td>0</td><td class="cardsowned">0</td><td class="fcardsowned">0</td><td class="percentage">0%</td><td class="badgelevel">0</td><td>0</td><td>0</td><td>0</td><td class="ccs">0</td><td class="ccfs">0</td><td>0</td><td><button type="button" class="btn btn-primary upbtn" name="update" value="'+ jd.name + '" id="'+ jd.appid + '" data-loading-text="Loading...">update</button></td><\/tr>');
             }
         }
 		//table sorter
@@ -245,8 +245,9 @@ function getUser(form){
        //modify table
        var len = profile.personaname.length + 3;
        for (var j in profile.licenses){
-           var game = '#g' + profile.licenses[j].substring(len).hashCode();
-           $(game).addClass('flag');
+           var game = 'g' + profile.licenses[j].substring(len).hashCode();
+           $('#'+game).addClass('flag');
+           updateTable(game);
        }
        //remove nonflagged
        tr = $('#stage').children('tr:not(tr.flag)').detach();
@@ -256,19 +257,19 @@ function getUser(form){
 return (true);
 }
 
-function gameLookup(self){
-    var id = $(self).attr('id');
+function updateTable(id){
+    //reset notifiers
+    $('#'+id).removeClass('success');
+    $('#'+id).removeClass('info');
+    $('#'+id).removeClass('warning');
+    $('#'+id).children('td.percentage').attr('style', '')
+
     var jd = store[id];
     var gamename = jd.name;
     var cards = {};
     var badgeObj = {};
     
-    //clear old data
-    $('#gameinfo').find('tr').empty();
-    //write title
-    $('#gametitle').text(gamename);
-    
-    //check if profile data loaded
+    //check if profile data loaded and we have a game with cards
     if(pstore && jd.count > 0){
     //manipulate items to get assoc array of hashcodes
     //for the most part json str are goning to be the same
@@ -288,6 +289,40 @@ function gameLookup(self){
         }
     }
     
+    var owned = 0;
+    var fowned = 0;
+    for (var k in jd.cards) {
+        var jsonstring = jd.cards[k];
+        var parse = JSON.parse(jsonstring);
+        //skip nontrading cards
+        if(!(parse.trading_card)){continue;}
+        var hash = 'hc' + parse.itemname.hashCode();
+        var str = parse.itemname + ' costs ' + parse.price + ' as of ' + parse.updated + "<br/>";
+        $('#cardlist').append('<td>'+str+'</td>');
+        if(cards[hash] && parse.itemtype.indexOf('Foil') == -1){
+            owned++;
+        }
+        else if (cards[hash] && parse.itemtype.indexOf('Foil') != -1){
+            fowned++;
+        }
+    }
+    $('#'+id).children('td.cardsowned').text(owned);
+    $('#'+id).children('td.fcardsowned').text(fowned);
+    
+    var fraction = owned + '/' + jd.count;
+    var percent = ((owned / jd.count)*100).toFixed(0);
+    var ps = percent + '% = ' + fraction
+    $('#'+id).children('td.percentage').text(ps)
+    if (percent >= 50){
+        $('#'+id).children('td.percentage').attr('style', 'color:green')
+    }
+    
+    var ccs = ((jd.count - owned)*jd.avg).toFixed(2);
+    $('#'+id).children('td.ccs').text(ccs);
+    
+    var ccfs = ((jd.fcount - fowned)*jd.favg).toFixed(2);
+    $('#'+id).children('td.ccfs').text(ccfs);
+    
     var badges = pstore.badges;
     for (var j in badges){
         var badge = badges[j];
@@ -298,37 +333,36 @@ function gameLookup(self){
         badgeObj[idhash] = sets;
     }
     if (badgeObj[id]){
-        str = "player has " + badgeObj[id] + " complete set(s)" + " :) ".repeat(badgeObj[id]);
+        str = badgeObj[id] + " :) ".repeat(badgeObj[id]);
         if (badgeObj[id] == 5){
-            str = "player has completed all 5 sets! :D"
+            str = "5 :D"
+            $('#'+id).addClass('success');
+            $('#'+id).children('td.percentage').text('100%')
+            $('#'+id).children('td.ccs').text('Maxed!');
+        }
+        else if (badgeObj[id] == 4){
+            $('#'+id).addClass('info');
         }
     }else{
-        str = "player has no complete sets :(";
+        str = "0";
     }
-    str = str + "<br/>";
-    $('#badges').append(str);
+    $('#'+id).children('td.lvl').text(str);
     
     var fid = 'g' + (gamename + ' (Foil)').hashCode();
     if (badgeObj[fid]){
-        str = "player has a complete FOIL set!! XD<br/>";
-    }else{
-        str = "player does not have a complete FOIL set :/<br/>";
-    }
-    $('#badges').append(str);
-    }
-    
-    for (var k in jd.cards) {
-        var jsonstring = jd.cards[k];
-        var parse = JSON.parse(jsonstring);
-        //skip nontrading cards
-        if(!(parse.trading_card)){continue;}
-        var hash = 'hc' + parse.itemname.hashCode();
-        var str = parse.itemname + ' costs ' + parse.price + ' as of ' + parse.updated + "<br/>";
-        $('#cardlist').append('<td>'+str+'</td>');
-        if(cards[hash]){
-            str = 'player has ' + parse.itemname + ' (' + cards[hash]['quanity'] + ')<br/>';
-            $('#inventory').append('<td>'+str+'</td>');
+        str = "1 XD";
+        $('#'+id).children('td.ccfs').text('Maxed!');
+        $('#'+id).addClass('success');
+        if (badgeObj[id] == 5){
+            $('#'+id).removeClass('success');
+            $('#'+id).addClass('warning');
+            $('#'+id).children('td.percentage').text('200%')
+            $('#'+id).children('td.lvl').text('6 ;)');
         }
+    }else{
+        str = "0";
+    }
+    $('#'+id).children('td.flvl').text(str);
     }
 }
 
@@ -398,7 +432,7 @@ Lvl 2: <span id="lvl2"></span><br/>
 Lvl 1: <span id="lvl1"></span><br/>
 </p>
 <p>
-Foil: <span id="lvlFoil"></span>
+Foil: <span id="lvlFoil"></span> XD
 </p>
 </div>
 <div class="span10">
@@ -407,18 +441,19 @@ Foil: <span id="lvlFoil"></span>
   <table class="table table-bordered table-hover tablesorter" id="datatable">
 	<thead>
     <tr>
-      <th>Appid</th>
+      <!--<th>Appid</th>-->
       <th>Name</th>
 	  <th>Cards Per Set</th>
-      <th>Cards Per Foil Set</th>
       <th>Cards Owned</th>
+      <th>Foil Cards Owned</th>
       <th>Percent Complete</th>
-      <th>Complete Sets (badge lvl)</th>
+      <th>Complete Sets</th>
+      <th>Complete Foil Sets</th>
       <th>Avg Card Cost</th>
       <th>Avg Foil Card Cost</th>
       <th>Cost to Complete Set</th>
       <th>Cost to Complete Foil Set</th>
-      <th>Last updated</th>
+      <th>Price Last updated</th>
 	  <th></th>
     </tr>
 	</thead>
