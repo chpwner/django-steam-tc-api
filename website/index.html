@@ -4,7 +4,7 @@
   <meta name="generator" content=
   "HTML Tidy for Linux/x86 (vers 25 March 2009), see www.w3.org">
 
-  <title>Steam Game Item List</title>
+  <title>Interactive Steam Trading Card Sheet</title>
   <meta name="viewport" content=
   "width=device-width, initial-scale=1.0">
   <link href="css/bootstrap.css" rel="stylesheet" media=
@@ -43,6 +43,8 @@ String.prototype.repeat = function( num )
 }
 
 function loader() {
+    $('#error').empty();
+    $('#playerName').html('<h1>Viewing All Games</h1>');
     var opts = {
         lines: 13,
         // The number of lines to draw
@@ -127,12 +129,12 @@ function webstuff(spinner, callback) {
             jd.ccfs = (jd.fcount * jd.favg).toFixed(2);
 			if (jd.count > 0) {
 				if (jd.count != jd.fcount){flag = ' error';}else{flag='';}
-	            $('#stage').append('<tr id="'+ jd.idhash + '" class="cardrow'+ flag +'"><!--<td>' + jd.appid + '</td>--><td>' + jd.name + '</td><td>' + jd.count+ '/' + jd.fcount + '</td><td class="cardsowned">0</td><td class="fcardsowned">0</td><td class="percentage">0%</td><td class="lvl">0</td><td class="flvl">0</td><td>' + jd.avg + '</td><td>' + jd.favg + '</td><td class="ccs">' + jd.ccs + '</td><td class="ccfs">' + jd.ccfs + '</td><td>' + jd.time + '</td><td><button type="button" class="btn btn-primary upbtn" name="update" value="'+ jd.name + '" id="'+ jd.appid + '" data-loading-text="Loading...">update</button></td><\/tr>');
+	            $('#stage').append('<tr id="'+ jd.idhash + '" class="cardrow'+ flag +'"><!--<td>' + jd.appid + '</td>--><td>' + jd.name + '</td><td>' + jd.count+ '/' + jd.fcount + '</td><td class="cardsowned">0</td><td class="fcardsowned">0</td><td class="percentage">0%</td><td class="lvl">0</td><td class="flvl">0</td><td>' + jd.avg + '</td><td>' + jd.favg + '</td><td class="ccs">' + jd.ccs + '</td><td class="ccfs">' + jd.ccfs + '</td><td>' + jd.time + '</td><td><button type="button" class="btn btn-small upbtn" name="update" value="'+ jd.name + '" id="'+ jd.appid + '" data-loading-text="Loading...">update</button></td><\/tr>');
                 c++;
                 ctotal = ctotal + jd.count + jd.fcount;
 			}
             else{
-	            $('#stage').append('<tr id="'+ jd.idhash + '" class="noncardrow"><!--<td>' + jd.appid + '</td>--><td>' + jd.name + '</td><td>0</td><td class="cardsowned">0</td><td class="fcardsowned">0</td><td class="percentage">0%</td><td class="badgelevel">0</td><td>0</td><td>0</td><td>0</td><td class="ccs">0</td><td class="ccfs">0</td><td>0</td><td><button type="button" class="btn btn-primary upbtn" name="update" value="'+ jd.name + '" id="'+ jd.appid + '" data-loading-text="Loading...">update</button></td><\/tr>');
+	            $('#stage').append('<tr id="'+ jd.idhash + '" class="noncardrow"><!--<td>' + jd.appid + '</td>--><td>' + jd.name + '</td><td>0</td><td class="cardsowned">0</td><td class="fcardsowned">0</td><td class="percentage">0%</td><td class="badgelevel">0</td><td>0</td><td>0</td><td>0</td><td class="ccs">0</td><td class="ccfs">0</td><td>0</td><td><button type="button" class="btn btn-small upbtn" name="update" value="'+ jd.name + '" id="'+ jd.appid + '" data-loading-text="Loading...">update</button></td><\/tr>');
             }
         }
 		//table sorter
@@ -170,9 +172,7 @@ var pstore;
 function getUser(form){
     //disable some buttons
     $('#sub').remove();
-    $('#updGames').attr('disabled',true);
-    $('#updInv').attr('disabled',true);
-    $('#updBdg').attr('disabled',true);
+    $('#updProfile').attr('disabled',true);
     
     //reset hide if applicable
     if (p){$('#toggle').trigger('click');}
@@ -212,7 +212,7 @@ function getUser(form){
         form.searchBtn.disabled = false;
         form.steamid.value = "Finnished!";
         $('#playerImage').attr('src', profile.avatar);
-        $('#playerName').text("Viewing " + profile.personaname + "'s Games");
+        $('#playerName').html("<h1>Viewing " + profile.personaname + "'s Games</h1>");
         $('#gamecount').text('Game Count: ' + profile.licenses.length);
         $('#itemcount').text('Item Count: ' + profile.items.length);
         $('#badgecount').text('Badge Count: ' + profile.badges.length);
@@ -249,9 +249,7 @@ function getUser(form){
        $("#datatable").trigger("update");
        
        //reenable buttons
-       $('#updGames').attr('disabled',false);
-       $('#updInv').attr('disabled',false);
-       $('#updBdg').attr('disabled',false);
+       $('#updProfile').attr('disabled',false);
     })
 return (true);
 }
@@ -340,7 +338,7 @@ function updateTable(id){
             $('#'+id).children('td.ccs').text('Maxed!');
         }
         else if (badgeObj[id] == 4){
-            $('#'+id).addClass('info');
+            //$('#'+id).addClass('info');
         }
     }else{
         str = "0";
@@ -369,28 +367,12 @@ function buttons(){
     //game info trigger
     $('#stage').children().click(function(){gameLookup(this);});
 
-    //inventory update
-    $('#updGames')
+    //profile update
+    $('#updProfile')
       .click(function () {
         var btn = $(this);
         btn.button('loading');
         updateGames(btn, function(btn){btn.button('reset');});
-      })
-
-    //inventory update
-    $('#updInv')
-      .click(function () {
-        var btn = $(this);
-        btn.button('loading');
-        updateInventory(btn, function(btn){btn.button('reset');});
-      })
-      
-    //badges update
-    $('#updBdg')
-      .click(function () {
-        var btn = $(this);
-        btn.button('loading');
-        updateBadges(btn, function(btn){btn.button('reset');});
       })
       
     //price update button
@@ -451,7 +433,7 @@ function updateGames(btn, callback){
 }
 </script>
 </head>
-<body onload="loader();">
+<body>
 <div class="container-fluid">
 <div class="row-fluid">
 <div class="span2">
@@ -483,12 +465,16 @@ Lvl 1: <span id="lvl1"></span><br/>
 <p>
 Foil: <span id="lvlFoil"></span>
 </p>
-<p><button type="button" class="btn" id="updGames" data-loading-text="Loading..." disabled=true>Update Games</button></p>
-<p><button type="button" class="btn" id="updInv" data-loading-text="Loading..." disabled=true>Update Inventory</button></p>
-<p><button type="button" class="btn" id="updBdg" data-loading-text="Loading..." disabled=true>Update Badges</button></p>
+<p><button type="button" class="btn" id="updProfile" data-loading-text="Loading..." disabled=true>Update Profile</button></p>
 </div>
 <div class="span10">
-<div><h1 style="float:left" id="playerName">Viewing All Games</h1><div style="float:right"><button type="button" id="toggle" class="btn btn-info">Hide Noncard Games</button></div></div>
+<div>
+<div style="float:left" id="playerName">
+<h1>Interactive Steam Trading Card Sheet</h1>
+<h2>By Chpwner</h2>
+</div>
+<div style="float:right"><button type="button" id="toggle" class="btn btn-info">Hide Noncard Games</button></div>
+</div>
 <div>
   <table class="table table-bordered table-hover tablesorter" id="datatable">
 	<thead>
@@ -505,14 +491,43 @@ Foil: <span id="lvlFoil"></span>
       <th>Avg Foil Card Cost</th>
       <th>Cost to Complete Set</th>
       <th>Cost to Complete Foil Set</th>
-      <th>Price Last updated</th>
+      <th>Prices Last Updated</th>
 	  <th></th>
     </tr>
 	</thead>
 	<tbody id="stage">
 	</tbody>
   </table>
-<div id="error"></div>
+<div id="error">
+<h3>Instructions</h3>
+<p>This site accesses <strong>public profile</strong> information from Steam to help with<br/>
+trading card collection, including community market price integration. </p>
+<p>After table is loaded: 
+<ul>
+<li>Load a profile using form on the left</li>
+<li>Click on the headers to sort table</li>
+<li>"Shift click" to sort by more than one category</li>
+<li>Hide superfluous games by clicking the button at the top right</li>
+</ul>
+</p>
+<p>Color code legend: 
+<ul>
+<li><span style="background-color:#d0e9c6">Green: Lvl 5 Badge or Lvl 1 Foil Badge</span></li>
+<li><span style="background-color:#fcf8e3">Gold: Lvl 5 Badge and Lvl 1 Foil Badge</span></li>
+<li><span style="background-color:#d9edf7">Blue: Market update in progress...</span></li>
+<li><span style="background-color:#f2dede">Red: Missing trading cards,
+the rarest cards<br/> are so rare no one has them for sale in the market</span></li>
+<li><span style="Color:green">Green Text: >= 50% progress toward a badge</span></li>
+</ul>
+</p>
+<p>
+This site uses a local cache of Steam's information, so it is not always up to date. <br/>
+Various update buttons are located on the page to gather new information. </p>
+<p>Start by loading all games into the table:</p>
+<p>
+<button class="btn btn-primary" onClick="loader()">Load Page</button>
+</p>
+</div>
 </div>
 </div>
 </div>
