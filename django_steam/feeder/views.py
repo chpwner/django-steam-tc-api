@@ -28,8 +28,8 @@ def updatePrice(request):
         return HttpResponseNotFound(name)
 
     for dic in query:
-        item = dic['item'] #str
-        type = dic['type'] #str
+        item = dic['itemname'] #str
+        type = dic['itemtype'] #str
         game = dic['game'] #str
         price = dic['price'] #float
 

@@ -49,10 +49,10 @@ class Items(models.Model):
 	
 class GameInventory(models.Model):
     catkey = models.CharField(primary_key=True, max_length=100)
-    steamid = models.ForeignKey('Players', related_name='games')
-    appid = models.ForeignKey('Games', related_name='games')
+    steamid = models.ForeignKey('Players', related_name='licenses')
+    appid = models.ForeignKey('Games', related_name='licenses')
     def __unicode__(self):
-        return str(self.appid)
+        return str(self.steamid) + "'s " + str(self.appid)
 	
 class ItemInventory(models.Model):
     steamid = models.ForeignKey('Players', related_name='items')

@@ -91,6 +91,7 @@ function webstuff(spinner, callback) {
         var ctotal = 0;
         for (var i = 0; i < length; i++) {
             var jd = games[i];
+            //console.log(jd);
             jd.idhash = 'g' + jd.name.hashCode();
             store[jd.idhash] = jd;
 			jd.sum = 0;
@@ -100,7 +101,7 @@ function webstuff(spinner, callback) {
 			jd.time = 0;
             for (var j in jd.cards) {
                 var jsonstring = jd.cards[j];
-                console.log(jsonstring);
+                //console.log(jsonstring);
                 var parse = JSON.parse(jsonstring);
                 var time = "";
                 if (parse.trading_card == true && parse.itemtype.indexOf("Foil") == -1) {
@@ -129,12 +130,12 @@ function webstuff(spinner, callback) {
             jd.ccfs = (jd.fcount * jd.favg).toFixed(2);
 			if (jd.count > 0) {
 				if (jd.count != jd.fcount){flag = ' error';}else{flag='';}
-	            $('#stage').append('<tr id="'+ jd.idhash + '" class="cardrow'+ flag +'"><!--<td>' + jd.appid + '</td>--><td>' + jd.name + '</td><td>' + jd.count+ '/' + jd.fcount + '</td><td class="cardsowned">0</td><td class="fcardsowned">0</td><td class="percentage">0%</td><td class="lvl">0</td><td class="flvl">0</td><td>' + jd.avg + '</td><td>' + jd.favg + '</td><td class="ccs">' + jd.ccs + '</td><td class="ccfs">' + jd.ccfs + '</td><td>' + jd.time + '</td><td><button type="button" class="btn btn-small upbtn" name="update" value="'+ jd.name + '" id="'+ jd.idhash + '" data-loading-text="Loading...">update</button></td><\/tr>');
+	            $('#stage').append('<tr id="'+ jd.idhash + '" class="cardrow'+ flag +'"><td class="jdname">' + jd.name + '</td><td class="jdcount">' + jd.count+ '/' + jd.fcount + '</td><td class="cardsowned">0</td><td class="fcardsowned">0</td><td class="percentage">0%</td><td class="lvl">0</td><td class="flvl">0</td><td class="jdavg">' + jd.avg + '</td><td class="jdfavg">' + jd.favg + '</td><td class="ccs">' + jd.ccs + '</td><td class="ccfs">' + jd.ccfs + '</td><td class="jdtime">' + jd.time + '</td><td><button type="button" class="btn btn-small upbtn" name="update" value="'+ jd.name + '" id="'+ jd.idhash + '" data-loading-text="Loading...">update</button></td><\/tr>');
                 c++;
                 ctotal = ctotal + jd.count + jd.fcount;
 			}
             else{
-	            $('#stage').append('<tr id="'+ jd.idhash + '" class="noncardrow"><!--<td>' + jd.appid + '</td>--><td>' + jd.name + '</td><td>0</td><td class="cardsowned">0</td><td class="fcardsowned">0</td><td class="percentage">0%</td><td class="badgelevel">0</td><td>0</td><td>0</td><td>0</td><td class="ccs">0</td><td class="ccfs">0</td><td>0</td><td><button type="button" class="btn btn-small upbtn" name="update" value="'+ jd.name + '" id="'+ jd.idhash + '" data-loading-text="Loading...">update</button></td><\/tr>');
+	            $('#stage').append('<tr id="'+ jd.idhash + '" class="noncardrow"><td class="jdname">' + jd.name + '</td><td class="jdcount">0</td><td class="cardsowned">0</td><td class="fcardsowned">0</td><td class="percentage">0%</td><td class="lvl">0</td><td class="flvl">0</td><td class="jdavg">0</td><td class="jdfavg">0</td><td class="ccs">0</td><td class="ccfs">0</td><td class="jdtime">0</td><td><button type="button" class="btn btn-small upbtn" name="update" value="'+ jd.name + '" id="'+ jd.idhash + '" data-loading-text="Loading...">update</button></td><\/tr>');
             }
         }
 		//table sorter
@@ -250,6 +251,12 @@ function getUser(form){
        
        //reenable buttons
        $('#updProfile').attr('disabled',false);
+    })
+    .fail(function( jqxhr, textStatus, error ) {
+        var err = textStatus + ", " + error;
+        console.log( "Request Failed: " + err );
+        form.steamid.value = "Request Failed: " + err;
+        form.searchBtn.disabled = false;
     })
 return (true);
 }
@@ -415,19 +422,73 @@ function gameLookup(btn){
 function updatePrice(btn, callback){
     var jqBtn = $(btn);
     var jqRow = jqBtn.parents('tr:first');
-    var rowclasses = jqRow.attr('class');
+
+    //button specific info
     var game = jqBtn.attr('value');
     var id = jqBtn.attr('id');
+    
+    //row specific info
+    var rowclasses = jqRow.attr('class');
+    var hashid = jqRow.attr('id');
+    var cardcount = jqRow.children('td.cardsowned').html();
+    var fcardcount = jqRow.children('td.fcardsowned').html();
+    var occs = jqRow.children('td.ccs').html();
+    var occfs = jqRow.children('td.ccfs').html();
+    
     console.log("hashcode "+id+" value "+game);
-    console.log(rowclasses);
+    
+    //set color flag
     jqRow.attr('class', 'info');
     
     $.getJSON( "http://192.168.1.3:8000/update/price/", {'game':game},function(data) {
-        console.log(data);
+        //compiled stats
+        var count = 0;
+        var fcount = 0;
+        var sum = 0;
+        var fsum = 0;
+        var avg = 0;
+        var favg = 0;
+        var time;
+
+        for (var i in data){
+            var card = data[i];
+            time = card.updated;
+            if (card.itemtype.indexOf('Foil') == -1){
+                //card is not foil
+                sum = sum + card.price;
+                count++;
+            }
+            else{
+                //card is foil
+                fsum = fsum + card.price;
+                fcount++;
+            }
+        }
+        avg = (sum / count).toFixed(2);
+        favg = (fsum / fcount).toFixed(2);
+        
+        var ccs = ((count - cardcount)*avg).toFixed(2);
+        var ccfs = ((fcount - fcardcount)*favg).toFixed(2);
+        
+        jqRow.children('td.jdtime').text(time);
+        if(occfs != "Maxed!"){jqRow.children('td.ccfs').text(ccfs);}
+        if(occs != "Maxed!"){jqRow.children('td.ccs').text(ccs);}
+        jqRow.children('td.jdfavg').text(favg);
+        jqRow.children('td.jdavg').text(avg);
+        jqRow.children('td.jdcount').text(count+'/'+fcount);
+        
+        //store them
+        store[hashid] = {'appid':null, 'avg':avg, 'favg':favg, 'cards':data, 
+        'ccs':ccs, 'ccfs':ccfs, 'count':count, 'fcount':fcount, 'sum':sum, 
+        'fsum':fsum, 'idhash':hashid, 'name':game, 'time':time
+        }
     })
     .fail(function( jqxhr, textStatus, error ) {
         var err = textStatus + ", " + error;
         console.log( "Request Failed: " + err );
+        var d = new Date();
+        var time = d.getTime();
+        jqRow.children('td.jdtime').text(time);
     })
     .always(function() {
         callback(btn);
@@ -504,7 +565,6 @@ Foil: <span id="lvlFoil"></span>
   <table class="table table-bordered table-hover tablesorter" id="datatable">
 	<thead>
     <tr>
-      <!--<th>Appid</th>-->
       <th>Name</th>
 	  <th>Cards Per Set</th>
       <th>Cards Owned</th>
