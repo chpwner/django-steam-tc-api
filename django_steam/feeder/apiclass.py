@@ -2,11 +2,11 @@ import sys
 import json
 import requests
 from datetime import datetime
-from billy.multiset import Multiset
+from multiset.multiset import Multiset
 
-#grab passwords from this file, hidden from github
-execfile('settings.py')
-
+def call_api(method, url, **kwargs):
+    kwargs['auth'] = ('apiadmin', '')
+    return requests.request(method, 'http://127.0.0.1:82/'+url, **kwargs)
 
 def getInventory(steamid):
     get = {

@@ -244,10 +244,10 @@ def doMarketQuery(name, append):
         
         #check to see if query result is in fact for the game selected on player profile
         if game == name + " Trading Card" or game == name + " Foil Trading Card":
-            print "++" + item + " is of type " + game + " and costs $" + price
+            #print "++" + item + " is of type " + game + " and costs $" + price
             retval.append({'item':item,'type':game, 'game':name, 'price':float(price)})
         else:
-            print "--" + item + " is of type " + game + " and not of type " + name
+            #print "--" + item + " is of type " + game + " and not of type " + name
             pass
    
     return retval
