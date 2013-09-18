@@ -17,10 +17,10 @@ def updateInventory(request):
     
 def updatePrice(request):
     if 'game' not in request.GET:
-        return HttpResponse(status=400);
+        return HttpResponse('game not specified',status=400);
     name = request.GET['game']
     if name == '':
-        return HttpResponse(status=400);
+        return HttpResponse('game not specified',status=400);
         
     query = steamclass.doMarketQuery(name, 'Trading Card')
     
