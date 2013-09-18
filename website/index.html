@@ -129,7 +129,7 @@ function webstuff(spinner, callback) {
             jd.ccfs = (jd.fcount * jd.favg).toFixed(2);
 			if (jd.count > 0) {
 				if (jd.count != jd.fcount){flag = ' error';}else{flag='';}
-	            $('#stage').append('<tr id="'+ jd.idhash + '" class="cardrow'+ flag +'"><!--<td>' + jd.appid + '</td>--><td>' + jd.name + '</td><td>' + jd.count+ '/' + jd.fcount + '</td><td class="cardsowned">0</td><td class="fcardsowned">0</td><td class="percentage">0%</td><td class="lvl">0</td><td class="flvl">0</td><td>' + jd.avg + '</td><td>' + jd.favg + '</td><td class="ccs">' + jd.ccs + '</td><td class="ccfs">' + jd.ccfs + '</td><td>' + jd.time + '</td><td><button type="button" class="btn btn-small upbtn" name="update" value="'+ jd.name + '" id="'+ jd.appid + '" data-loading-text="Loading...">update</button></td><\/tr>');
+	            $('#stage').append('<tr id="'+ jd.idhash + '" class="cardrow'+ flag +'"><!--<td>' + jd.appid + '</td>--><td>' + jd.name + '</td><td>' + jd.count+ '/' + jd.fcount + '</td><td class="cardsowned">0</td><td class="fcardsowned">0</td><td class="percentage">0%</td><td class="lvl">0</td><td class="flvl">0</td><td>' + jd.avg + '</td><td>' + jd.favg + '</td><td class="ccs">' + jd.ccs + '</td><td class="ccfs">' + jd.ccfs + '</td><td>' + jd.time + '</td><td><button type="button" class="btn btn-small upbtn" name="update" value="'+ jd.name + '" id="'+ jd.idhash + '" data-loading-text="Loading...">update</button></td><\/tr>');
                 c++;
                 ctotal = ctotal + jd.count + jd.fcount;
 			}
@@ -372,7 +372,7 @@ function buttons(){
       .click(function () {
         var btn = $(this);
         btn.button('loading');
-        updateGames(btn, function(btn){btn.button('reset');});
+        updateProfile(btn, function(btn){btn.button('reset');});
       })
       
     //price update button
@@ -380,7 +380,7 @@ function buttons(){
       .click(function () {
         var btn = $(this);
         btn.button('loading');
-        update(btn, function(btn){btn.button('reset');});
+        updatePrice(btn, function(btn){btn.button('reset');});
       })
 
     //hide button
@@ -408,13 +408,38 @@ $(document).keypress(
       }
 });
 
-function update(btn, callback){
-    console.log("price update not implemented yet")
+function gameLookup(btn){
+    console.log("game detail not implemented yet");
+}
+
+function updatePrice(btn, callback){
+    var jqBtn = $(btn);
+    var game = jqBtn.attr('value');
+    var id = jqBtn.attr('id');
+    console.log("hashcode "+id+" value "+game);
+    
+    $.getJSON( "http://192.168.1.3:8000/update/price/", {'game':game},function(data) {
+        console.log(data);
+    })
+    .fail(function( jqxhr, textStatus, error ) {
+        var err = textStatus + ", " + error;
+        console.log( "Request Failed: " + err );
+    })
+    .always(function() {
+        callback(btn);
+    });
+}
+
+function updateProfile(btn, callback){
+    updateGames(btn, callback);
+    updateBadges(btn, callback);
+    updateInventory(btn, callback);
     callback(btn);
 }
 
-function gameLookup(btn){
-    console.log("game detail not implemented yet");
+function updateGames(btn, callback){
+    console.log("updInv not implemented yet");
+    callback(btn);
 }
 
 function updateBadges(btn, callback){
@@ -423,11 +448,6 @@ function updateBadges(btn, callback){
 }
 
 function updateInventory(btn, callback){
-    console.log("updInv not implemented yet");
-    callback(btn);
-}
-
-function updateGames(btn, callback){
     console.log("updInv not implemented yet");
     callback(btn);
 }
