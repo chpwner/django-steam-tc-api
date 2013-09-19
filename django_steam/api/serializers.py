@@ -29,12 +29,12 @@ class GameSerializer(serializers.ModelSerializer):
         #depth = 1
 
 class PlayerSerializer(serializers.ModelSerializer):
-    games = serializers.RelatedField(many=True, read_only=True)
+    licenses = serializers.RelatedField(many=True, read_only=True)
     badges = serializers.RelatedField(many=True, read_only=True)
     items = serializers.RelatedField(many=True, read_only=True)
     class Meta:
         model = Players
-        fields = ('steamid', 'personaname', 'avatar', 'games', 'badges', 'items')
+        fields = ('steamid', 'personaname', 'avatar', 'licenses', 'badges', 'items')
         #depth = 1
         
 class GameInvSerializer(serializers.ModelSerializer):
