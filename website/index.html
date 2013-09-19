@@ -308,8 +308,6 @@ function updateTable(id){
         //skip nontrading cards
         if(!(parse.trading_card)){continue;}
         var hash = 'hc' + parse.itemname.hashCode();
-        var str = parse.itemname + ' costs ' + parse.price + ' as of ' + parse.updated + "<br/>";
-        $('#cardlist').append('<td>'+str+'</td>');
         if(cards[hash] && parse.itemtype.indexOf('Foil') == -1){
             owned++;
         }
@@ -414,8 +412,107 @@ $(document).keypress(
       }
 });
 
-function gameLookup(btn){
-    console.log("game detail not implemented yet");
+function gameLookup(self){
+    var id = $(self).attr('id');
+    var jd = store[id];
+    var gamename = jd.name;
+    var cards = {};
+    var badgeObj = {};
+    
+    //clear old data
+    $('#gameinfo').find('tr').empty();
+    //write title
+    $('#gametitle').text(gamename);
+    
+    //check if profile data loaded
+    if(pstore && jd.count > 0){
+    //manipulate items to get assoc array of hashcodes
+    //for the most part json str are goning to be the same
+    //unless an update was triggered after getting composite data
+    //but before getting the profile
+    var items = pstore.items;
+    for (var i in items){
+        var jsonstring = items[i];
+        var parse = JSON.parse(jsonstring);
+        //skip nontrading cards
+        if(!(parse.trading_card)){continue;}
+        var idhash = 'hc' + parse.itemname.hashCode();
+        if (cards[idhash]){
+            cards[idhash]['quanity']++;
+        }else{
+            cards[idhash] = {'itemname':parse.itemname, 'quanity':1};
+        }
+    }
+    
+    var badges = pstore.badges;
+    for (var j in badges){
+        var badge = badges[j];
+        var pos = badge.indexOf(' (Lvl:');
+        var badgename = badge.substring(0,pos);
+        var sets = badge.substring(pos+6, pos+7)
+        var idhash = 'g' + badgename.hashCode();
+        badgeObj[idhash] = sets;
+    }
+    if (badgeObj[id]){
+        str = "<td>player has " + badgeObj[id] + " complete set(s)" + " :) ".repeat(badgeObj[id]) + '</td>';
+        if (badgeObj[id] == 5){
+            str = "<td>player has completed all 5 sets! :D</td>"
+        }
+    }else{
+        str = "<td>player has no complete sets :(</td>";
+    }
+    $('#cardlist').prepend("<td>Cards</td>");
+    
+    var fid = 'g' + (gamename + ' (Foil)').hashCode();
+    if (badgeObj[fid]){
+        str = "<td>player has a complete FOIL set!! XD</td>";
+    }else{
+        str = "<td>player does not have a complete FOIL set :/</td>";
+    }
+    $('#inventory').prepend('<td>Player Owns</td>');
+    $('#updated').prepend("<td>Updated</td>");
+    $('#price').prepend('<td><a target="_blank" href="http://steamcommunity.com/market/search?q=' + gamename + ' trading card">Market Price</a></td>');
+    }
+    
+    for (var k in jd.cards) {
+        var jsonstring = jd.cards[k];
+        if (typeof(jsonstring) === "object"){
+            parse = jsonstring;
+        }else{
+            var parse = JSON.parse(jsonstring);
+        }
+        //skip non trading cards and foils
+        if(parse.trading_card == true && parse.itemtype.indexOf('Foil') == -1){
+        var hash = 'hc' + parse.itemname.hashCode();
+        $('#cardlist').append('<td>'+parse.itemname+'</td>');
+        $('#price').append('<td>'+parse.price+'</td>');
+        $('#updated').append('<td>'+parse.updated+'</td>');
+        if(cards[hash]){
+            str = parse.itemname + ' (' + cards[hash]['quanity'] + ')';
+            }else{str = "&nbsp;";}
+            $('#inventory').append('<td>'+str+'</td>');
+        }
+    }
+    
+    for (var k in jd.cards) {
+        var jsonstring = jd.cards[k];
+        if (typeof(jsonstring) === "object"){
+            parse = jsonstring;
+        }else{
+            var parse = JSON.parse(jsonstring);
+        }
+        //skip nontrading cards
+        if(parse.trading_card == true && parse.itemtype.indexOf('Foil') != -1){
+        var hash = 'hc' + parse.itemname.hashCode();
+        $('#cardlist').append('<td>'+parse.itemname+'</td>');
+        $('#price').append('<td>'+parse.price+'</td>');
+        $('#updated').append('<td>'+parse.updated+'</td>');
+        if(cards[hash]){
+            str = parse.itemname + ' (' + cards[hash]['quanity'] + ')';
+            }else{str = "&nbsp;";}
+            $('#inventory').append('<td>'+str+'</td>');
+        }
+    }
 }
 
 function updatePrice(btn, callback){
@@ -625,12 +722,21 @@ Foil: <span id="lvlFoil"></span>
 </p>
 </div>
 <div class="span10">
-<div>
-<div style="float:left" id="playerName">
+<div id="playerName">
 <h1>Interactive Steam Trading Card Sheet</h1>
 <h2>By Chpwner</h2>
 </div>
-<div style="float:right"><button type="button" id="toggle" class="btn btn-info">Hide Noncard Games</button></div>
+<p class="text-right"><button type="button" id="toggle" class="btn btn-info">Hide Noncard Games</button></p>
+<div id="gameinfo">
+<table class="table table-bordered">
+<caption id="gametitle"></caption>
+<tbody>
+<tr id="cardlist"></tr>
+<tr id="price"></tr>
+<tr id="updated"></tr>
+<tr id="inventory"></tr>
+</tbody>
+</table>
 </div>
 <div>
   <table class="table table-bordered table-hover tablesorter" id="datatable">
