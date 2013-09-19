@@ -377,7 +377,7 @@ function updateTable(id){
 
 function buttons(){
     //game info trigger
-    $('#stage').children().click(function(){gameLookup(this);});
+    $('#stage').children().click(function(){gameLookup(this); location.href = "#top";});
       
     //price update button
     $('.upbtn')
@@ -727,6 +727,7 @@ Foil: <span id="lvlFoil"></span>
 <h2>By Chpwner</h2>
 </div>
 <p class="text-right"><button type="button" id="toggle" class="btn btn-info">Hide Noncard Games</button></p>
+<a href="#top"></a>
 <div id="gameinfo">
 <table class="table table-bordered">
 <caption id="gametitle"></caption>
