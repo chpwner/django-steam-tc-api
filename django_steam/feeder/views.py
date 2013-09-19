@@ -148,7 +148,7 @@ def updateProfile(request):
         id = str(id)
         #print i, id, "deleted"
         #call api to add items to the items inventory
-        call_api('DELETE', 'inv/ItemInventory/' + id + '/')
+        apiclass.call_api('DELETE', 'inv/ItemInventory/' + id + '/')
         i += 1
 
     i = 1    
@@ -162,7 +162,7 @@ def updateProfile(request):
         'steamid':steamid,
         'itemname':item
         }
-        call_api('POST', 'inv/ItemInventory/', data=post).text
+        apiclass.call_api('POST', 'inv/ItemInventory/', data=post).text
         i += 1
         
     return HttpResponse("Profile Updated/Added Successfully")
