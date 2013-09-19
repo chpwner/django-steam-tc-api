@@ -34,8 +34,8 @@ def invDiff(old, new):
     delete = set1.subtract(set2)
     add = set2.subtract(set1)
     
-    print "you need to delete", len(delete), "items"
-    print delete
+    #print "you need to delete", len(delete), "items"
+    #print delete
 
     deleteops = []
     for item in old:
@@ -43,10 +43,10 @@ def invDiff(old, new):
             deleteops.append(item['id'])
             delete.remove(item['itemname'])
     
-    print "which means you need to delete", len(deleteops), "ids"
-    print deleteops
-    print "you need to add", len(add), "items"
-    print add
+    #print "which means you need to delete", len(deleteops), "ids"
+    #print deleteops
+    #print "you need to add", len(add), "items"
+    #print add
     
     return {'delete':deleteops, 'add':add}
     

@@ -156,7 +156,7 @@ def updateProfile(request):
         count = count + 1
         logger(count, total, file)
         
-        print i, item, "added"
+        #print i, item, "added"
         #call api to add items to the items inventory
         post = {
         'steamid':steamid,
