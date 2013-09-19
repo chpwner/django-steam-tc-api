@@ -18,10 +18,13 @@ def getPlayerInfo(steamid):
     URL = urllib.urlopen("http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=" + apikey + "&steamids=" + steamid)
     profile = json.load(URL)
     players = profile['response']['players']
-    #select player from array of players
-    player = players[0]
-
-    return player
+    #check for null
+    if players:
+        #select player from array of players
+        player = players[0]
+        return player
+    else:
+        return False
     
 def getPlayerGames(steamid):
     #rewrite URL to access GetOwnedGames from Steam API
@@ -35,6 +38,9 @@ def getPlayerGames(steamid):
     gameObj = profileGames['response']['games']
     for game in gameObj:
         retval.append({'appid':str(game['appid']),'name':game['name']})
+    
+    #everybody has this one
+    retval.append({'appid':'245070','name':'Steam Summer Getaway'})
     
     return retval
     
@@ -65,6 +71,8 @@ def getPlayerInventory(steamid):
     itemsDic = inventory['rgInventory']
     itemarray = []
 
+    if not itemsDic:
+        return itemarray
     # k is key is the same as classid
     # classid is steams terminology for the type of item (ie trading card)
     # creates a list of items by their ID

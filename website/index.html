@@ -172,7 +172,6 @@ var p;
 var pstore;
 function getUser(form){
     //disable some buttons
-    $('#sub').remove();
     $('#updProfile').attr('disabled',true);
     
     //reset hide if applicable
@@ -204,9 +203,6 @@ function getUser(form){
         {
             form.searchBtn.disabled = false;
             form.steamid.value = "Not Found!";
-            $('#userform').attr('action','adduser.php');
-            $('#userform').attr('method','post');
-            $('#userform').append('<input id="sub" class="btn btn-success" type="submit" value="Add New ID">');
             return('user not in database');
         }
         pstore = profile;
@@ -297,7 +293,12 @@ function updateTable(id){
     var fowned = 0;
     for (var k in jd.cards) {
         var jsonstring = jd.cards[k];
-        var parse = JSON.parse(jsonstring);
+        if (typeof(jsonstring) === "object")
+        { //update script already did the conversion
+            var parse = jsonstring;
+        }else{
+            var parse = JSON.parse(jsonstring);
+        }
         //skip nontrading cards
         if(!(parse.trading_card)){continue;}
         var hash = 'hc' + parse.itemname.hashCode();
@@ -497,25 +498,20 @@ function updatePrice(btn, callback){
 }
 
 function updateProfile(btn, callback){
-    updateGames(btn, callback);
-    updateBadges(btn, callback);
-    updateInventory(btn, callback);
     callback(btn);
 }
 
-function updateGames(btn, callback){
-    console.log("updInv not implemented yet");
-    callback(btn);
-}
-
-function updateBadges(btn, callback){
-    console.log("updBdg not implemented yet");
-    callback(btn);
-}
-
-function updateInventory(btn, callback){
-    console.log("updInv not implemented yet");
-    callback(btn);
+function newUser(form){
+    var steamid = form.steamid.value;
+    form.steamid.value = "Loading...";
+    form.sub.disabled = true;
+    
+    if(validateID(steamid)){
+        console.log(steamid);
+    } else {
+        form.steamid.value = "17 digit steamid required";
+        form.sub.disabled = false;
+    }
 }
 </script>
 </head>
@@ -536,6 +532,7 @@ function updateInventory(btn, callback){
   Steam name or id:</br>
   <input type="text" name="steamid" class="span12"><br/>
   <button type="button" class="btn" name="searchBtn" id="searchBtn" onClick="getUser(this.form)" disabled=true>Load Profile</button>
+  <button type="button" class="btn btn-success" name="sub" id="sub" onClick="newUser(this.form)">Add New ID</button>
 </form>
 <br/>
 <p id="gamecount"></p>

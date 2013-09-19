@@ -9,7 +9,6 @@ import apiclass
 #enter steam id
 steamid = "76561197991459756"
 
-
 #add player to db
 player = steamclass.getPlayerInfo(steamid)
 playername = player['personaname']
@@ -21,6 +20,67 @@ post = {
 }
 print apiclass.addPlayer(post)
 
+#add games to the games db
+gameDic = steamclass.getPlayerGames(steamid)
+for game in gameDic:
+    print apiclass.addGame(game)
+
+#add games to the game inventory
+for game in gameDic:
+    name = game['name']
+    appid = game['appid']
+
+    print "inventorying", name, " ", appid
+    #call api to add Games
+    post = {
+    'catkey':steamid+appid,
+    'steamid':steamid, 
+    'appid':name
+    }
+    print apiclass.addGameInventory(post)
+
+
+#add badges to the badges db
+getstuff = steamclass.getPlayerBadges(steamid)
+
+postDic = getstuff[0]
+badgeDic = getstuff[1]
+badgeDic2 = getstuff[2]
+
+games = gameDic
+
+print "you own", len(games), "games"
+
+i = 1
+
+for game in games:
+    appid = str(game['appid'])
+    name = game['name']
+    try:
+        name + "test string"
+    except UnicodeEncoderError:
+        name = 'unicode error'
+        
+    # check if the owned game has a badge
+    if appid in badgeDic:
+        print i, "your game", name, "is at level", badgeDic[appid]
+        i += 1
+        for post in postDic:
+            if (post['appid'] == appid):
+                post['appid'] = name
+                print apiclass.addBadge(post)
+                print apiclass.updateBadge(post['catkey'], post)
+        
+    if appid in badgeDic2:
+        print i, "your game", name, "(FOIL) is at level", badgeDic2[appid]
+        i += 1
+        for post in postDic:
+            if (post['appid'] == appid):
+                post['appid'] = name
+                print apiclass.addBadge(post)
+                print apiclass.updateBadge(post['catkey'], post)
+
+
 #add items to the items db
 itemDic = steamclass.getPlayerInventory(steamid)
 for item in itemDic:
@@ -29,7 +89,7 @@ for item in itemDic:
 #gen item inventory update commands
 old = apiclass.getInventory(steamid)
 new = itemDic
-dif = invDiff(old, new)
+dif = apiclass.invDiff(old, new)
 
 delete = dif['delete']
 add = dif['add']
@@ -53,14 +113,3 @@ for item in add:
     }
     print call_api('POST', 'inv/ItemInventory/', data=post).text
     i += 1
-
-#add games to the games db
-gameDic = steamclass.getPlayerGames(steamid)
-for game in gameDic:
-    print apiclass.addGame(game)
-
-#add badges to the badges db
-badgeTup = steamclass.getPlayerBadges(steamid)
-badgeDic = badgeTup[0]
-for badge in badgeDic:
-    print apiclass.addBadge(badge)

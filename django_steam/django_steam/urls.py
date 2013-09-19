@@ -26,8 +26,6 @@ urlpatterns = patterns('',
     url(r'^inv/', include(router3.urls)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^update/$', feeder.views.index, name="Update Index"),
-    url(r'^update/games/', feeder.views.updateGames, name="Update Games"),
-    url(r'^update/badges/', feeder.views.updateBadges, name="Update Badges"),
-    url(r'^update/inventory/', feeder.views.updateInventory, name="Update Inventory"),
+    url(r'^update/profile/', feeder.views.updateProfile, name="Update Profile"),
     url(r'^update/price/', feeder.views.updatePrice, name="Update Item Price")
 )
