@@ -9,10 +9,9 @@
   "width=device-width, initial-scale=1.0">
   <link href="css/bootstrap.css" rel="stylesheet" media=
   "screen" type="text/css">
-  <script src=
-  "//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.js"
-  type="text/javascript">
-</script>
+  <script src="js/jquery-1.10.2.js"></script>
+  <script src="js/jquery-ui.js"></script>
+  <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
   <script src="js/bootstrap.js"></script>
   <script src="js/spin.min.js"
   type="text/javascript">
@@ -172,7 +171,9 @@ var p;
 var pstore;
 function getUser(form){
     //disable some buttons
-    $('#updProfile').attr('disabled',true);
+    $('#sub').attr('disabled',true);
+    //hide progress bar
+    $('#infobar').attr('style','display:none');
     
     //reset hide if applicable
     if (p){$('#toggle').trigger('click');}
@@ -193,16 +194,21 @@ function getUser(form){
         data = {'personaname':steamid};
     }
     else{
+       //reenable buttons
         form.searchBtn.disabled = false;
         form.steamid.value = "No ID entered!";
+
         return('no id entered');
     }
     $.getJSON('http://api.chpwner.org:82/data/Players/', data, function (profile) {
         var profile = profile[0];
         if (!(profile))
         {
+            //reenable buttons
+            $('#sub').attr('disabled',false);
             form.searchBtn.disabled = false;
             form.steamid.value = "Not Found!";
+            $('#progressbar').html('<span style="color:red">Hint: use the "Update Profile" button to add a new ID</span>');
             return('user not in database');
         }
         pstore = profile;
@@ -246,7 +252,7 @@ function getUser(form){
        $("#datatable").trigger("update");
        
        //reenable buttons
-       $('#updProfile').attr('disabled',false);
+       $('#sub').attr('disabled',false);
     })
     .fail(function( jqxhr, textStatus, error ) {
         var err = textStatus + ", " + error;
@@ -374,14 +380,6 @@ function updateTable(id){
 function buttons(){
     //game info trigger
     $('#stage').children().click(function(){gameLookup(this);});
-
-    //profile update
-    $('#updProfile')
-      .click(function () {
-        var btn = $(this);
-        btn.button('loading');
-        updateProfile(btn, function(btn){btn.button('reset');});
-      })
       
     //price update button
     $('.upbtn')
@@ -497,22 +495,95 @@ function updatePrice(btn, callback){
     });
 }
 
-function updateProfile(btn, callback){
-    callback(btn);
-}
-
-function newUser(form){
+var error;
+function updateProfile(form){
+    //unhide the bar
+    $('#infobar').attr('style','');
+    var bar = $( "#progressbar" );
+    bar.progressbar({ value: 0 });
+    error = null;
     var steamid = form.steamid.value;
     form.steamid.value = "Loading...";
     form.sub.disabled = true;
+    form.searchBtn.disabled = true;
     
-    if(validateID(steamid)){
-        console.log(steamid);
-    } else {
+    if (pstore){
+        steamid = pstore.steamid;
+    }
+    
+    if (!(validateID(steamid))){
         form.steamid.value = "17 digit steamid required";
         form.sub.disabled = false;
+        return(false);
+    }
+    
+    console.log(steamid);
+    pstore.steamid = steamid;
+    
+    //get the profile loading
+    $.ajax({
+      url: "http://192.168.1.3:8000/update/profile/",
+      data: {'steamid':steamid},
+      type: 'GET'
+    }).done(function( data ) {
+        form.steamid.value = steamid;
+            bar.progressbar('value', 100);
+            getUser(form);
+        })
+        .fail(function() {
+            alert( "error loading profile" );
+            error = "error";
+            form.steamid.value = "Error!";
+        })
+        .always(function(){
+            form.sub.disabled = false;
+            form.searchBtn.disabled = false;
+        });
+    
+    if (error){ return(false);}
+    
+    //start loading bar
+    var data = 0;
+    var count = 0;
+
+    ploader(data,count);
+    
+    return(true);
+}
+
+function ploader(data, count){
+    if (error == "error"){
+        return ("error");
+    }
+    var str = data.toFixed(0) + "% Loaded... ";
+    str = str + count + " seconds passed... ";
+    var est = ((count / data) * (100 - data)).toFixed(0);
+    str = str + "estimated " + est + " seconds remain";
+    
+    $('#stats').text(str);
+    
+    if(data < 100){
+        t=setTimeout(function(){ajaxCall(count)},1000);
     }
 }
+
+function ajaxCall(count){
+var data = 0;
+count++;
+
+$.ajax({
+  url: "logger/" + pstore.steamid,
+  cache: false
+})
+  .done(function( data ) {
+    data=Number(data);
+    $( "#progressbar" ).progressbar("value",data);
+        ploader(data, count);
+    })
+    .fail(function() {
+        ploader(data, count);
+  });
+  }
 </script>
 </head>
 <body>
@@ -532,8 +603,12 @@ function newUser(form){
   Steam name or id:</br>
   <input type="text" name="steamid" class="span12"><br/>
   <button type="button" class="btn" name="searchBtn" id="searchBtn" onClick="getUser(this.form)" disabled=true>Load Profile</button>
-  <button type="button" class="btn btn-success" name="sub" id="sub" onClick="newUser(this.form)">Add New ID</button>
+  <button type="button" class="btn" name="sub" id="sub" onClick="updateProfile(this.form)" disabled=true>Update Profile</button>
 </form>
+<div id="infobar">
+<p id="stats"></p>
+<div id="progressbar"></div>
+</div>
 <br/>
 <p id="gamecount"></p>
 <p id="itemcount"></p>
@@ -548,7 +623,6 @@ Lvl 1: <span id="lvl1"></span><br/>
 <p>
 Foil: <span id="lvlFoil"></span>
 </p>
-<p><button type="button" class="btn" id="updProfile" data-loading-text="Loading..." disabled=true>Update Profile</button></p>
 </div>
 <div class="span10">
 <div>
