@@ -21,6 +21,47 @@ String.prototype.repeat = function (num) {
     return cat;
 }
 
+function getCookie(c_name)
+{
+var c_value = document.cookie;
+var c_start = c_value.indexOf(" " + c_name + "=");
+if (c_start == -1)
+  {
+  c_start = c_value.indexOf(c_name + "=");
+  }
+if (c_start == -1)
+  {
+  c_value = null;
+  }
+else
+  {
+  c_start = c_value.indexOf("=", c_start) + 1;
+  var c_end = c_value.indexOf(";", c_start);
+  if (c_end == -1)
+  {
+c_end = c_value.length;
+}
+c_value = unescape(c_value.substring(c_start,c_end));
+}
+return c_value;
+}
+
+function setCookie(c_name,value,exdays)
+{
+var exdate=new Date();
+exdate.setDate(exdate.getDate() + exdays);
+var c_value=escape(value) + ((exdays==null) ? "" : "; expires="+exdate.toUTCString());
+document.cookie=c_name + "=" + c_value;
+}
+
+$( document ).ready(function() {
+	var cookie = getCookie('chpwner');
+	if (cookie == 1){
+		loader();
+		setCookie('chpwner',0,1);
+	}
+});
+
 function loader() {
     $('#error').empty();
     $('#playerName').html('<h1>Viewing All Games</h1>');
@@ -640,9 +681,7 @@ function updateProfile(form) {
     //unhide the bar
     $('#infobar').attr('style', '');
     var bar = $("#progressbar");
-    bar.progressbar({
-        value: 0
-    });
+    bar.attr('style','width:0%;');
 
     console.log(steamid);
     pstore.steamid = steamid;
@@ -656,7 +695,7 @@ function updateProfile(form) {
         type: 'GET'
     }).done(function (data) {
         form.steamid.value = steamid;
-        bar.progressbar('value', 100);
+        bar.attr('style','width:100%');
         getUser(form);
     })
         .fail(function () {
@@ -708,9 +747,9 @@ function ajaxCall(count) {
         url: "logger/" + pstore.steamid,
         cache: false
     })
-        .done(function (data) {
+        .done(function (data) {            
+            $("#progressbar").attr('style',('width:'+data+'%;'));
             data = Number(data);
-            $("#progressbar").progressbar("value", data);
             ploader(data, count);
         })
         .fail(function () {

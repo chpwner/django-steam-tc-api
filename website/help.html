@@ -1,14 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Interactive Steam Trading Card Sheet</title>
+  <title>Interactive Steam Trading Card Sheet Help</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="css/bootstrap.css" rel="stylesheet" media="screen" type="text/css">
-  <script src="js/jquery-1.10.2.js"></script>
-  <script src="js/bootstrap.js"></script>
-  <script src="js/spin.min.js"type="text/javascript"></script>
-  <script src="js/__jquery.tablesorter.min.js" type="text/javascript"></script>
-  <script src="js/steam-tc-api.js"></script>
+  <script>
+  function setCookie(c_name,value,exdays)
+  {
+    var exdate=new Date();
+    exdate.setDate(exdate.getDate() + exdays);
+    var c_value=escape(value) + ((exdays==null) ? "" : "; expires="+exdate.toUTCString());
+    document.cookie=c_name + "=" + c_value;
+    location.href="index.html";
+  }
+  </script>
 </head>
 <body>
 <div class="container-fluid">
@@ -18,12 +23,11 @@
           <div class="navbar-inner">
             <a class="brand span2" href="../">Chpwner.org</a>
             <ul class="nav">
-              <li class="active"><a href="index.html">Steam TC Table</a></li>
-              <li><a href="help.html">Help</a></li>
+              <li><a href="index.html">Steam TC Table</a></li>
+              <li class="active"><a href="help.html">Help</a></li>
               <li><a href="about.html">About</a></li>
               <li></li>
             </ul>
-            <div class="text-right"><button type="button" id="toggle" class="btn btn-info">Hide Noncard Games</button></div>
           </div>
         </div>
     </div>
@@ -34,15 +38,9 @@
     <form id="userform">
       Steam name or id:</br>
       <input type="text" name="steamid" class="span12"><br/>
-      <button type="button" class="btn" name="searchBtn" id="searchBtn" onClick="getUser(this.form)" disabled=true>Load Profile</button>
-      <button type="button" class="btn" name="sub" id="sub" onClick="updateProfile(this.form)" disabled=true>Update Profile</button>
+      <button type="button" class="btn" name="searchBtn" id="searchBtn" disabled=true>Load Profile</button>
+      <button type="button" class="btn" name="sub" id="sub" disabled=true>Update Profile</button>
     </form>
-    <div id="infobar" style="display:none">
-      <p id="stats"></p>
-      <div class="progress">
-      <div id="progressbar" class="bar"></div>
-      </div>
-    </div>
     <br/>
     <p id="gamecount"></p>
     <p id="itemcount"></p>
@@ -75,27 +73,6 @@
         </tbody>
         </table>
       </div>
-        <table class="table table-bordered table-hover tablesorter" id="datatable">
-        <thead>
-        <tr>
-          <th>Name</th>
-          <th>Cards Per Set</th>
-          <th>Cards Owned</th>
-          <th>Foil Cards Owned</th>
-          <th>Percent Complete</th>
-          <th>Complete Sets</th>
-          <th>Complete Foil Sets</th>
-          <th>Avg Card Cost</th>
-          <th>Avg Foil Card Cost</th>
-          <th>Cost to Complete Set</th>
-          <th>Cost to Complete Foil Set</th>
-          <th>Prices Last Updated</th>
-          <th></th>
-        </tr>
-        </thead>
-        <tbody id="stage">
-        </tbody>
-        </table>
       <div id="error">
       <h3>Instructions</h3>
       <p>This site accesses <strong>public profile</strong> information from Steam to help with<br/>
@@ -123,7 +100,7 @@
       Various update buttons are located on the page to gather new information. </p>
       <p>Start by loading all games into the table:</p>
       <p>
-      <button class="btn btn-primary" onClick="loader()">Load Page</button>
+      <button class="btn btn-primary" onClick="setCookie('chpwner',1,1)">Load Page</button>
       </p>
       </div>
     </div>

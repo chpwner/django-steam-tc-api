@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Interactive Steam Trading Card Sheet Help</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="css/bootstrap.css" rel="stylesheet" media="screen" type="text/css">
+</head>
+<body>
+<div class="container-fluid">
+  <div class="row-fluid">
+    <div class="span12">
+        <div class="navbar">
+          <div class="navbar-inner">
+            <a class="brand span2" href="../">Chpwner.org</a>
+            <ul class="nav">
+              <li><a href="index.html">Steam TC Table</a></li>
+              <li><a href="help.html">Help</a></li>
+              <li class="active"><a href="about.html">About</a></li>
+              <li></li>
+            </ul>
+          </div>
+        </div>
+    </div>
+  </div>
+  <div class="row-fluid">
+    <div class="span2" id="sidebar">
+    <img id="playerImage" src="http://www.gravatar.com/avatar/9cc01cfb905ec56d582629e259f20589?s=184" class="img-rounded">
+    <form id="userform">
+      Steam name or id:</br>
+      <input type="text" name="steamid" class="span12"><br/>
+      <button type="button" class="btn" name="searchBtn" id="searchBtn" disabled=true>Load Profile</button>
+      <button type="button" class="btn" name="sub" id="sub" disabled=true>Update Profile</button>
+    </form>
+    <br/>
+    <p id="gamecount"></p>
+    <p id="itemcount"></p>
+    <p id="badgecount"></p>
+    <p>
+    Lvl 5: <span id="lvl5"></span><br/>
+    Lvl 4: <span id="lvl4"></span><br/>
+    Lvl 3: <span id="lvl3"></span><br/>
+    Lvl 2: <span id="lvl2"></span><br/>
+    Lvl 1: <span id="lvl1"></span><br/>
+    </p>
+    <p>
+    Foil: <span id="lvlFoil"></span>
+    </p>
+    </div>
+    <div class="span10">
+      <div id="playerName">
+      <h1>Interactive Steam Trading Card Sheet</h1>
+      <h2>By Chpwner</h2>
+      </div>
+      <a href="#top"></a>
+      <div id="gameinfo">
+        <table class="table table-bordered">
+        <caption id="gametitle"></caption>
+        <tbody>
+        <tr id="cardlist"></tr>
+        <tr id="price"></tr>
+        <tr id="updated"></tr>
+        <tr id="inventory"></tr>
+        </tbody>
+        </table>
+      </div>
+      <div id="error">
+      <h3>About</h3>
+      <p>
+	  This is an interactive steam trading card website inspired <br/>
+      by an excel spread sheet by Reaper madness
+      </p>
+	  <h4>Credits</h4>
+	  <p>
+	  Reaper Madness's aforementioned <a href="Steam-Card-Database-Gold.xlsm">excel sheet</a>
+	  </p>
+	  <p>
+	  Bootstrap - <a href="http://getbootstrap.com">getbootstrap.com</a> - 
+	  for their CSS and javascript page widgets
+	  </p>
+	  <p>
+	  spin.js - <a href="http://fgnass.github.io/spin.js/">fgnass.github.io</a> - for his js spinner animation
+	  </p>
+	  <p>
+	  tablesorter - <a href="http://tablesorter.com">tablesorter.com</a> - for the neat js table sorting script
+	  </p>
+	  <p>
+	  jquery - <a href="http://jquery.com">jquery.com</a> - let's face it who doesn't use jquery
+	  </p>
+	  <p>
+	  Django - <a href="http://www.djangoproject.com">Django Proejct</a> - for the api and database backend <br/>
+	  </p>
+	  <p>
+	  Steam and the Valve Corporation for obvious reasons:<br/>
+	  <a href="http://steamcommunity.com/dev/">Steamcommunity Web API</a><br/>
+	  <a href="http://Steamcommuntiy.com">Steamcommunity.com</a><br/>
+	  <a href="http://Steampowered.com">Steampowered.com</a> <br/>
+	  </p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
