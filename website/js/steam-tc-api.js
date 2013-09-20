@@ -152,7 +152,7 @@ function validateID(InString) {
 //globals?
 var tr;
 var p;
-var pstore;
+var pstore = {};
 
 function getUser(form) {
     //disable some buttons
@@ -196,7 +196,7 @@ function getUser(form) {
             $('#sub').attr('disabled', false);
             form.searchBtn.disabled = false;
             form.steamid.value = "Not Found!";
-            $('#progressbar').html('<span style="color:red">Hint: use the "Update Profile" button to add a new ID</span>');
+            $('#gamecount').html('<span style="color:red">Hint: use the "Update Profile" button to add a new ID</span>');
             return ('user not in database');
         }
         pstore = profile;
@@ -258,6 +258,11 @@ function updateTable(id) {
     $('#' + id).children('td.percentage').attr('style', '')
 
     var jd = store[id];
+    if (!(jd)){
+        console.log("unloaded game detected, skipping");
+        return(false);
+    }
+    
     var gamename = jd.name;
     var cards = {};
     var badgeObj = {};
@@ -616,19 +621,13 @@ function updatePrice(btn, callback) {
 var error;
 
 function updateProfile(form) {
-    //unhide the bar
-    $('#infobar').attr('style', '');
-    var bar = $("#progressbar");
-    bar.progressbar({
-        value: 0
-    });
     error = null;
     var steamid = form.steamid.value;
     form.steamid.value = "Loading...";
     form.sub.disabled = true;
     form.searchBtn.disabled = true;
 
-    if (pstore) {
+    if (pstore.steamid) {
         steamid = pstore.steamid;
     }
 
@@ -637,6 +636,13 @@ function updateProfile(form) {
         form.sub.disabled = false;
         return (false);
     }
+    
+    //unhide the bar
+    $('#infobar').attr('style', '');
+    var bar = $("#progressbar");
+    bar.progressbar({
+        value: 0
+    });
 
     console.log(steamid);
     pstore.steamid = steamid;
