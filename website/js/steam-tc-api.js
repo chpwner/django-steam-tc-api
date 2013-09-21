@@ -108,7 +108,7 @@ function loader() {
 var store = {};
 
 function webstuff(spinner, callback) {
-    $.getJSON('http://api.chpwner.org:82/data/Games/', function (games) {
+    $.getJSON('https://api.chpwner.org/data/Games/', function (games) {
         var length = games.length;
         var c = 0;
         var ctotal = 0;
@@ -230,7 +230,7 @@ function getUser(form) {
 
         return ('no id entered');
     }
-    $.getJSON('http://api.chpwner.org:82/data/Players/', data, function (profile) {
+    $.getJSON('https://api.chpwner.org/data/Players/', data, function (profile) {
         var profile = profile[0];
         if (!(profile)) {
             //reenable buttons
@@ -587,7 +587,7 @@ function updatePrice(btn, callback) {
     //set color flag
     jqRow.attr('class', 'info');
 
-    $.getJSON("http://api.chpwner.org:82/update/price/", {
+    $.getJSON("https://api.chpwner.org/update/price/", {
         'game': game
     }, function (data) {
         //compiled stats
@@ -645,6 +645,15 @@ function updatePrice(btn, callback) {
             'name': game,
             'time': time
         }
+        jqRow.attr('class', rowclasses);
+        //reset error flag
+        console.log(count);
+        if (count == fcount){
+            jqRow.removeClass('error');
+        }
+        else{
+            jqRow.addClass('error');
+        }
     })
         .fail(function (jqxhr, textStatus, error) {
             var err = textStatus + ", " + error;
@@ -652,10 +661,10 @@ function updatePrice(btn, callback) {
             var d = new Date();
             var time = d.getTime();
             jqRow.children('td.jdtime').text(time);
+            jqRow.attr('class', rowclasses);
         })
         .always(function () {
             callback(btn);
-            jqRow.attr('class', rowclasses);
         });
 }
 
@@ -688,7 +697,7 @@ function updateProfile(form) {
 
     //get the profile loading
     $.ajax({
-        url: "http://api.chpwner.org:82/update/profile/",
+        url: "https://api.chpwner.org/update/profile/",
         data: {
             'steamid': steamid
         },

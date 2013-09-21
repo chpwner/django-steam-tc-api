@@ -4,16 +4,16 @@
   <title>Interactive Steam Trading Card Sheet Help</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="css/bootstrap.css" rel="stylesheet" media="screen" type="text/css">
-  <script>
-  function setCookie(c_name,value,exdays)
-  {
-    var exdate=new Date();
-    exdate.setDate(exdate.getDate() + exdays);
-    var c_value=escape(value) + ((exdays==null) ? "" : "; expires="+exdate.toUTCString());
-    document.cookie=c_name + "=" + c_value;
-    location.href="index.html";
-  }
-  </script>
+<script>
+function setCookie(c_name,value,exdays)
+{
+var exdate=new Date();
+exdate.setDate(exdate.getDate() + exdays);
+var c_value=escape(value) + ((exdays==null) ? "" : "; expires="+exdate.toUTCString());
+document.cookie=c_name + "=" + c_value;
+location.href="index.html";
+}
+</script>
 </head>
 <body>
 <div class="container-fluid">
@@ -34,13 +34,19 @@
   </div>
   <div class="row-fluid">
     <div class="span2" id="sidebar">
-    <img id="playerImage" src="http://www.gravatar.com/avatar/9cc01cfb905ec56d582629e259f20589?s=184" class="img-rounded">
+    <img id="playerImage" src="img/logo.png" class="img-rounded">
     <form id="userform">
       Steam name or id:</br>
       <input type="text" name="steamid" class="span12"><br/>
-      <button type="button" class="btn" name="searchBtn" id="searchBtn" disabled=true>Load Profile</button>
-      <button type="button" class="btn" name="sub" id="sub" disabled=true>Update Profile</button>
+      <button type="button" class="btn" name="searchBtn" id="searchBtn" onClick="getUser(this.form)" disabled=true>Load Profile</button>
+      <button type="button" class="btn" name="sub" id="sub" onClick="updateProfile(this.form)" disabled=true>Update Profile</button>
     </form>
+    <div id="infobar" style="display:none">
+    <p id="stats"></p>
+    <div class="progress">
+    <div id="progressbar" class="bar"></div>
+    </div>
+    </div>
     <br/>
     <p id="gamecount"></p>
     <p id="itemcount"></p>

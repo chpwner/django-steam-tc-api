@@ -5,8 +5,8 @@ from datetime import datetime
 from multiset.multiset import Multiset
 
 def call_api(method, url, **kwargs):
-    kwargs['auth'] = ('apiadmin', '')
-    return requests.request(method, 'http://127.0.0.1:82/'+url, **kwargs)
+    kwargs['auth'] = ('apiadmin', 'FZLc4mJwfb7RMEYr')
+    return requests.request(method, 'http://192.168.1.4:82/'+url, **kwargs)
 
 def getInventory(steamid):
     get = {
@@ -58,6 +58,15 @@ def addPlayer(post):
     #'avatar':avatar
     #}
     return call_api('POST', 'data/Players/', data=post).text
+    
+def updatePlayer(steamid, post):
+    #call api to add player, post should look like this:
+    #post = {
+    #'steamid':playerid, 
+    #'personaname':playername, 
+    #'avatar':avatar
+    #}
+    return call_api('PUT', 'data/Players/'+steamid, data=post).text
     
 def addGame(post):
     #call api to add Games, post should look like this:
