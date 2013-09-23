@@ -711,11 +711,9 @@ function updateProfile(form) {
             alert("error loading profile");
             error = "error";
             form.steamid.value = "Error!";
-        })
-        .always(function () {
             form.sub.disabled = false;
             form.searchBtn.disabled = false;
-        });
+        })
 
     if (error) {
         return (false);
