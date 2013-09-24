@@ -242,11 +242,11 @@ function getUser(form) {
         }
         pstore = profile;
         form.searchBtn.disabled = false;
-        form.steamid.value = "Finnished!";
+        form.steamid.value = "Finished!";
         $('#playerImage').attr('src', profile.avatar);
         $('#playerName').html("<h1>Viewing " + profile.personaname + "'s Games</h1>");
         $('#gamecount').text('Game Count: ' + profile.licenses.length);
-        $('#itemcount').text('Item Count: ' + profile.items.length);
+        $('#itemcount').html('Item Count: <a href="#invModal" onClick="modal()">' + profile.items.length + '</a>');
         $('#badgecount').text('Badge Count: ' + profile.badges.length);
         var lvlArr = [0, 0, 0, 0, 0, 0];
         var foil = 0;
@@ -319,7 +319,7 @@ function updateTable(id) {
             var jsonstring = items[i];
             var parse = JSON.parse(jsonstring);
             //skip nontrading cards
-            if (!(parse.trading_card)) {
+            if (!(parse.trading_card) && pstore.done == 1) {
                 continue;
             }
             var idhash = 'hc' + parse.itemname.hashCode();
@@ -327,11 +327,22 @@ function updateTable(id) {
                 cards[idhash]['quanity']++;
             } else {
                 cards[idhash] = {
+                    'itemtype': parse.itemtype,
                     'itemname': parse.itemname,
                     'quanity': 1
                 };
             }
         }
+        
+        if (pstore.done != 1){
+        $("#plyInv").empty();
+        $("#invModalLabel").text(pstore.personaname + "'s Inventory");
+        for (var key in cards){
+            var item = cards[key];
+            $("#plyInv").append("<li><strong>" + item.itemname + "</strong> (" + item.quanity + ") <i>"+ item.itemtype + "</i></li>");
+        }
+        }
+        pstore.done = 1;
 
         var owned = 0;
         var fowned = 0;
@@ -714,6 +725,10 @@ function updateProfile(form) {
             form.sub.disabled = false;
             form.searchBtn.disabled = false;
         })
+        .always(function () {
+            //form.sub.disabled = false;
+            //form.searchBtn.disabled = false;
+        });
 
     if (error) {
         return (false);
@@ -762,4 +777,8 @@ function ajaxCall(count) {
         .fail(function () {
             ploader(data, count);
         });
+}
+
+function modal(){
+    $('#invModal').modal()
 }

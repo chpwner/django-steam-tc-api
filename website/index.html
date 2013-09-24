@@ -58,6 +58,19 @@
     <br/>
     <p id="gamecount"></p>
     <p id="itemcount"></p>
+    <!-- Inventiory Modal -->
+    <div id="invModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="invModalLabel" aria-hidden="true">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+        <h3 id="invModalLabel">Player Inventory</h3>
+      </div>
+      <div class="modal-body">
+        <ol id="plyInv"></ol>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" data-dismiss="modal" aria-hidden="true">Close</button>
+      </div>
+    </div>
     <p id="badgecount"></p>
     <p>
     Lvl 5: <span id="lvl5"></span><br/>
@@ -118,6 +131,7 @@
           <li>Click on the headers to sort table</li>
           <li>"Shift click" to sort by more than one category</li>
           <li>Hide superfluous games by clicking the button at the top right</li>
+	  <li>Click on a game row to expand it into individual cards</li>
       </ul>
       </p>
       <p>Color code legend: 
