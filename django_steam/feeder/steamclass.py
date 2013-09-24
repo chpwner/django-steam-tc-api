@@ -90,6 +90,7 @@ def getPlayerInventory(steamid):
         name = item['market_name']
         gametype = item['type']
         game = item['tags'][0]['name']
+        appid = item['market_fee_app']
 
         if gametype.find('Trading Card') > -1:
             cardflag = 'on'
@@ -103,7 +104,8 @@ def getPlayerInventory(steamid):
         'game':game,
         'trading_card':cardflag,
         'price':0, #cannot get price here
-        'updated':datetime.now()
+        'updated':datetime.now(),
+        'appid':appid
         }
         
     retval = []
