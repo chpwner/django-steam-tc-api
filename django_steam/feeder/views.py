@@ -45,6 +45,8 @@ def updateProfile(request):
     'avatar':avatar
     }
     apiclass.addPlayer(post)
+    #update player just incase they change their avatar
+    apiclass.updatePlayer(post)
 
     #All of our itterables
     gameDic = steamclass.getPlayerGames(steamid)
