@@ -233,6 +233,8 @@ function getUser(form) {
     $.getJSON('https://api.chpwner.org/data/Players/', data, function (profile) {
         var profile = profile[0];
         if (!(profile)) {
+	    //reset pstore
+	    pstore = {}
             //reenable buttons
             $('#sub').attr('disabled', false);
             form.searchBtn.disabled = false;
@@ -695,6 +697,7 @@ function updateProfile(form) {
     if (!(validateID(steamid))) {
         form.steamid.value = "17 digit steamid required";
         form.sub.disabled = false;
+        form.searchBtn.disabled = false;
         return (false);
     }
     
