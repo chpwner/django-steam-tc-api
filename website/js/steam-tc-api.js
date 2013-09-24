@@ -55,11 +55,11 @@ document.cookie=c_name + "=" + c_value;
 }
 
 $( document ).ready(function() {
-	var cookie = getCookie('chpwner');
-	if (cookie == 1){
-		loader();
-		setCookie('chpwner',0,1);
-	}
+    var cookie = getCookie('chpwner');
+    if (cookie == 1){
+        loader();
+        setCookie('chpwner',0,1);
+    }
 });
 
 function loader() {
@@ -233,8 +233,8 @@ function getUser(form) {
     $.getJSON('https://api.chpwner.org/data/Players/', data, function (profile) {
         var profile = profile[0];
         if (!(profile)) {
-	    //reset pstore
-	    pstore = {}
+            //reset pstore
+            pstore = {}
             //reenable buttons
             $('#sub').attr('disabled', false);
             form.searchBtn.disabled = false;
