@@ -6,7 +6,7 @@ from multiset.multiset import Multiset
 
 def call_api(method, url, **kwargs):
     #This is not the password anymore, I assure you
-    kwargs['auth'] = ('apiadmin', 'FZLc4mJwfb7RMEYr')
+    kwargs['auth'] = ('apiadmin', '')
     return requests.request(method, 'http://192.168.1.4:82/'+url, **kwargs)
 
 def getInventory(steamid):
