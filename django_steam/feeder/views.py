@@ -28,7 +28,7 @@ def updateProfile(request):
     steamid = str(steamid)
     
     count = 0
-    total = 10
+    total = 1000
     file = '/var/www/steam/logger/' + steamid
     logger(count,total, file)
     
@@ -49,12 +49,25 @@ def updateProfile(request):
     apiclass.addPlayer(post)
     #update player just incase they change their avatar
     apiclass.updatePlayer(steamid, post)
+    
+    count = 5
+    logger(count,total, file)
 
     #All of our itterables
     gameDic = steamclass.getPlayerGames(steamid)
+    
+    count = 10
+    logger(count,total, file)
+    
     itemDic = steamclass.getPlayerInventory(steamid)
     
+    count = 15
+    logger(count,total, file)
+    
     badgestuff = steamclass.getPlayerBadges(steamid)
+    
+    count = 20
+    logger(count,total, file)
 
     postDic = badgestuff[0]
     badgeDic = badgestuff[1]
@@ -95,11 +108,17 @@ def updateProfile(request):
     for i in temp:
         gamesOld.append(str(i['appid']))
         
+    count = 25
+    logger(count,total, file)
+        
     ret = apiclass.call_api('GET', 'data/Items/')
     jsontxt = ret.text
     temp = json.loads(jsontxt)
     for i in temp:
         itemsOld.append(i['catkey'])
+        
+    count = 30
+    logger(count,total, file)
         
     get = {
     'steamid':steamid,
@@ -112,6 +131,9 @@ def updateProfile(request):
         if catkey[0:17] == steamid:
             gameInvOld.append(catkey[17:])
             
+    count = 35
+    logger(count,total, file)
+            
     get = {
     'steamid':steamid,
     }
@@ -121,6 +143,9 @@ def updateProfile(request):
     for i in temp:
         if i['steamid'] == steamid:
             itemInvOld.append(i['itemname'])
+            
+    count = 40
+    logger(count,total, file)
             
     get = {
     'steamid':steamid,
@@ -154,6 +179,9 @@ def updateProfile(request):
     old = Multiset(badgeInvOld)
     new = Multiset(badgeInv)
     badgeAdd = new.subtract(old)
+    
+    count = 50
+    logger(count,total, file)
     
     count = 0
     total = len(gameDic)*3 + len(itemDic) + 5
