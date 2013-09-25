@@ -28,7 +28,7 @@ def updateProfile(request):
     steamid = str(steamid)
     
     count = 0
-    total = 1000
+    total = 100
     file = '/var/www/steam/logger/' + steamid
     logger(count,total, file)
     
@@ -76,7 +76,6 @@ def updateProfile(request):
     #generate simple lists of respective primary keys
     gameInv = []
     items = []
-    itemInv = []
     badgeInv = []
     
     for game in gameDic:
@@ -88,7 +87,6 @@ def updateProfile(request):
         catkey = item['catkey']
         if catkey not in items:
             items.append(catkey)
-        itemInv.append(catkey)
         #catkey is itemname+itemtype
         #append to games where applicable
         if appid not in gameInv:
@@ -103,7 +101,6 @@ def updateProfile(request):
     gamesOld = []
     itemsOld = []
     gameInvOld = []
-    itemInvOld = []
     badgeInvOld = []
     
     ret = apiclass.call_api('GET', 'data/Games/')
@@ -138,15 +135,7 @@ def updateProfile(request):
     count = 35
     logger(count,total, file)
             
-    get = {
-    'steamid':steamid,
-    }
-    ret = apiclass.call_api('GET', 'inv/ItemInventory/', params=get)
-    jsontxt = ret.text
-    temp = json.loads(jsontxt)
-    for i in temp:
-        if i['steamid'] == steamid:
-            itemInvOld.append(i['itemname'])
+    itemInvOld = apiclass.getInventory(steamid)
             
     count = 40
     logger(count,total, file)
@@ -174,11 +163,6 @@ def updateProfile(request):
     new = Multiset(gameInv)
     gameInvAdd = new.subtract(old)
     gameInvDel = old.subtract(new)
-    
-    old = Multiset(itemInvOld)
-    new = Multiset(itemInv)
-    itemInvAdd = new.subtract(old)
-    itemInvDel = old.subtract(new)
     
     old = Multiset(badgeInvOld)
     new = Multiset(badgeInv)
@@ -272,13 +256,21 @@ def updateProfile(request):
         if item['catkey'] in itemAdd:
             apiclass.addItem(item)
 
+    #gen item inventory update commands
+    #old = apiclass.getInventory(steamid)
+    old = itemInvOld
+    new = itemDic
+    dif = apiclass.invDiff(old, new)
+
+    delete = dif['delete']
+    add = dif['add']
     
-    total = total + len(itemInvDel) + len(itemInvAdd) - 5
+    total = total + len(delete) + len(add) - 5
     logger(count, total, file)
 
     i = 1
     #delete cards
-    for id in itemInvDel:
+    for id in delete:
         count = count + 1
         logger(count, total, file)
         
@@ -289,7 +281,7 @@ def updateProfile(request):
         i += 1
 
     i = 1    
-    for item in itemInvAdd:
+    for item in add:
         count = count + 1
         logger(count, total, file)
         
