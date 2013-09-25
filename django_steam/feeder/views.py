@@ -13,12 +13,11 @@ def updateProfile(request):
     def logger(count, total, file):
         if count % 5 == 0 or total - count < 6:
             #print count, '/', total
-            #f = open(file, 'w')
-            #progress = (count / float(total)) * 100
+            f = open(file, 'w')
+            progress = (count / float(total)) * 100
             #print progress
-            #f.write(str(progress))
-            #f.close()
-            pass
+            f.write(str(progress))
+            f.close()
 
     if 'steamid' not in request.GET:
         return HttpResponse('steamid not specified',status=400)
