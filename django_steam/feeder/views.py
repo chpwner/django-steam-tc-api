@@ -241,20 +241,13 @@ def updateProfile(request):
         if item['catkey'] in itemAdd:
             apiclass.addItem(item)
 
-    #gen item inventory update commands
-    old = apiclass.getInventory(steamid)
-    new = itemDic
-    dif = apiclass.invDiff(old, new)
-
-    delete = dif['delete']
-    add = dif['add']
     
-    total = total + len(delete) + len(add) - 5
+    total = total + len(itemInvDel) + len(itemInvAdd) - 5
     logger(count, total, file)
 
     i = 1
     #delete cards
-    for id in delete:
+    for id in itemInvDel:
         count = count + 1
         logger(count, total, file)
         
@@ -265,7 +258,7 @@ def updateProfile(request):
         i += 1
 
     i = 1    
-    for item in add:
+    for item in itemInvAdd:
         count = count + 1
         logger(count, total, file)
         
