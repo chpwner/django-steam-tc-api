@@ -75,6 +75,7 @@ def updateProfile(request):
     
     #generate simple lists of respective primary keys
     gameInv = []
+    items = []
     itemInv = []
     badgeInv = []
     
@@ -84,7 +85,10 @@ def updateProfile(request):
     for item in itemDic:
         appid = str(item['appid'])
         game = item['game']
-        itemInv.append(item['catkey'])
+        catkey = item['catkey']
+        if catkey not in items:
+            items.append(catkey)
+        itemInv.append(catkey)
         #catkey is itemname+itemtype
         #append to games where applicable
         if appid not in gameInv:
@@ -163,7 +167,7 @@ def updateProfile(request):
     gameAdd = new.subtract(old)
     
     old = Multiset(itemsOld)
-    new = Multiset(itemInv)
+    new = Multiset(items)
     itemAdd = new.subtract(old)
     
     old = Multiset(gameInvOld)
@@ -200,7 +204,7 @@ def updateProfile(request):
         logger(count, total, file)
         
         name = game['name']
-        appid = game['appid']
+        appid = str(game['appid'])
 
         #print "inventorying", name, " ", appid
         #call api to add Games
