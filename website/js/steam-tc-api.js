@@ -751,8 +751,8 @@ function ploader(data, count) {
         return ("error");
     }
     var str = data.toFixed(0) + "% Loaded... ";
-    str = str + count + " seconds passed... ";
-    var est = ((count / data) * (100 - data)).toFixed(0);
+    str = str + (count*5) + " seconds passed... ";
+    var est = (((count*5) / data) * (100 - data)).toFixed(0);
     str = str + "estimated " + est + " seconds remain";
 
     $('#stats').text(str);
@@ -760,7 +760,7 @@ function ploader(data, count) {
     if (data < 100) {
         t = setTimeout(function () {
             ajaxCall(count)
-        }, 1000);
+        }, 5000);
     }
 }
 
@@ -769,7 +769,7 @@ function ajaxCall(count) {
     count++;
 
     $.ajax({
-        url: "logger/" + pstore.steamid,
+        url: "https://api.chpwner.org/steam/logger/" + pstore.steamid,
         cache: false
     })
         .done(function (data) {            
