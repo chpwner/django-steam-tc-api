@@ -544,7 +544,7 @@ function gameLookup(self) {
         //skip non trading cards and foils
         if (parse.trading_card == true && parse.itemtype.indexOf('Foil') == -1) {
             var hash = 'hc' + parse.itemname.hashCode();
-            $('#cardlist').append('<td>' + parse.itemname + '</td>');
+            $('#cardlist').append('<td><a target="_blank" href="http://steamcommunity.com/market/listings/753/' + jd.appid + '-' + parse.itemname + '">' + parse.itemname + '</a></td>');
             $('#price').append('<td>' + parse.price + '</td>');
             $('#updated').append('<td>' + parse.updated + '</td>');
             if (cards[hash]) {
@@ -566,7 +566,7 @@ function gameLookup(self) {
         //skip nontrading cards
         if (parse.trading_card == true && parse.itemtype.indexOf('Foil') != -1) {
             var hash = 'hc' + parse.itemname.hashCode();
-            $('#cardlist').append('<td>' + parse.itemname + '</td>');
+            $('#cardlist').append('<td><a target="_blank" href="http://steamcommunity.com/market/listings/753/' + jd.appid + '-' + parse.itemname + '">' + parse.itemname + '</a></td>');
             $('#price').append('<td>' + parse.price + '</td>');
             $('#updated').append('<td>' + parse.updated + '</td>');
             if (cards[hash]) {

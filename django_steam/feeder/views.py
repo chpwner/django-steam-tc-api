@@ -91,6 +91,9 @@ def updateProfile(request):
         #append to games where applicable
         if appid not in gameInv:
             gameDic.append({'name':game, 'appid':appid})
+			# if they player has items for a game, this makes that game appear to
+			#  be owned i.e. the person is collecting for a game they do not own, 
+			#  the usefulness of this is obtuse and I am considering removing it.
             gameInv.append(appid)
         
     for badge in postDic:
