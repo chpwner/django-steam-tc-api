@@ -155,11 +155,11 @@ function webstuff(spinner, callback) {
                 } else {
                     flag = '';
                 }
-                $('#stage').append('<tr id="' + jd.idhash + '" class="cardrow' + flag + '"><td class="jdname">' + jd.name + '</td><td class="jdcount">' + jd.count + '/' + jd.fcount + '</td><td class="cardsowned">0</td><td class="fcardsowned">0</td><td class="percentage">0%</td><td class="lvl">0</td><td class="flvl">0</td><td class="jdavg">' + jd.avg + '</td><td class="jdfavg">' + jd.favg + '</td><td class="ccs">' + jd.ccs + '</td><td class="ccfs">' + jd.ccfs + '</td><td class="jdtime">' + jd.time + '</td><td><button type="button" class="btn btn-small upbtn" name="update" value="' + jd.name + '" id="' + jd.idhash + '" data-loading-text="Loading...">update</button></td><\/tr>');
+                $('#stage').append('<tr id="' + jd.idhash + '" class="cardrow' + flag + '"><td class="jdname">' + jd.name + '</td><td class="jdcount">' + jd.count + '/' + jd.fcount + '</td><td class="cardsowned">0</td><td class="fcardsowned">0</td><td class="percentage">0%</td><td class="lvl">0</td><td class="flvl">0</td><td class="jdavg">' + jd.avg + '</td><td class="jdfavg">' + jd.favg + '</td><td class="ccs">' + jd.ccs + '</td><td class="ccfs">' + jd.ccfs + '</td><td class="jdtime">' + jd.time + '</td><td><button type="button" class="btn btn-small upbtn" name="update" value="' + jd.name + '" id="' + jd.appid + '" data-loading-text="Loading...">update</button></td><\/tr>');
                 c++;
                 ctotal = ctotal + jd.count + jd.fcount;
             } else {
-                $('#stage').append('<tr id="' + jd.idhash + '" class="noncardrow"><td class="jdname">' + jd.name + '</td><td class="jdcount">0</td><td class="cardsowned">0</td><td class="fcardsowned">0</td><td class="percentage">0%</td><td class="lvl">0</td><td class="flvl">0</td><td class="jdavg">0</td><td class="jdfavg">0</td><td class="ccs">0</td><td class="ccfs">0</td><td class="jdtime">0</td><td><button type="button" class="btn btn-small upbtn" name="update" value="' + jd.name + '" id="' + jd.idhash + '" data-loading-text="Loading...">update</button></td><\/tr>');
+                $('#stage').append('<tr id="' + jd.idhash + '" class="noncardrow"><td class="jdname">' + jd.name + '</td><td class="jdcount">0</td><td class="cardsowned">0</td><td class="fcardsowned">0</td><td class="percentage">0%</td><td class="lvl">0</td><td class="flvl">0</td><td class="jdavg">0</td><td class="jdfavg">0</td><td class="ccs">0</td><td class="ccfs">0</td><td class="jdtime">0</td><td><button type="button" class="btn btn-small upbtn" name="update" value="' + jd.name + '" id="' + jd.appid + '" data-loading-text="Loading...">update</button></td><\/tr>');
             }
         }
         //table sorter
@@ -595,7 +595,7 @@ function updatePrice(btn, callback) {
     var occs = jqRow.children('td.ccs').html();
     var occfs = jqRow.children('td.ccfs').html();
 
-    console.log("hashcode " + id + " value " + game);
+    console.log("hashcode " + hashid + " value " + game);
 
     //set color flag
     jqRow.attr('class', 'info');
@@ -644,7 +644,7 @@ function updatePrice(btn, callback) {
 
         //store them
         store[hashid] = {
-            'appid': null,
+            'appid': id,
             'avg': avg,
             'favg': favg,
             'cards': data,
