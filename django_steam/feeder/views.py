@@ -3,6 +3,8 @@ import steamclass
 import apiclass
 import json
 import os.path
+import sys
+from multiset.multiset import Multiset
 
 def index(request):
     return HttpResponse("Index")
@@ -26,7 +28,7 @@ def updateProfile(request):
     steamid = str(steamid)
     
     count = 0
-    total = 10
+    total = 100
     file = '/var/www/steam/logger/' + steamid
     logger(count,total, file)
     
@@ -46,20 +48,139 @@ def updateProfile(request):
     }
     apiclass.addPlayer(post)
     #update player just incase they change their avatar
-    apiclass.updatePlayer(steaamid, post)
+    apiclass.updatePlayer(steamid, post)
+    
+    count = 5
+    logger(count,total, file)
 
     #All of our itterables
     gameDic = steamclass.getPlayerGames(steamid)
+    
+    count = 10
+    logger(count,total, file)
+    
     itemDic = steamclass.getPlayerInventory(steamid)
+    
+    count = 15
+    logger(count,total, file)
+    
+    badgestuff = steamclass.getPlayerBadges(steamid)
+    
+    count = 20
+    logger(count,total, file)
+
+    postDic = badgestuff[0]
+    badgeDic = badgestuff[1]
+    badgeDic2 = badgestuff[2]
+    
+    #generate simple lists of respective primary keys
+    gameInv = []
+    items = []
+    badgeInv = []
+    
+    for game in gameDic:
+        gameInv.append(str(game['appid']))
+        
+    for item in itemDic:
+        appid = str(item['appid'])
+        game = item['game']
+        catkey = item['catkey']
+        if catkey not in items:
+            items.append(catkey)
+        #catkey is itemname+itemtype
+        #append to games where applicable
+        if appid not in gameInv:
+            gameDic.append({'name':game, 'appid':appid})
+            gameInv.append(appid)
+        
+    for badge in postDic:
+        badgeInv.append(badge['catkey']+str(badge['level']))
+        #catkey is steamid+appid+1+foiled(0 or 1)+level(for this instance only)
+        
+    #get old lists from the database
+    gamesOld = []
+    itemsOld = []
+    gameInvOld = []
+    badgeInvOld = []
+    
+    ret = apiclass.call_api('GET', 'data/Games/')
+    jsontxt = ret.text
+    temp = json.loads(jsontxt)
+    for i in temp:
+        gamesOld.append(str(i['appid']))
+        
+    count = 25
+    logger(count,total, file)
+        
+    ret = apiclass.call_api('GET', 'data/Items/')
+    jsontxt = ret.text
+    temp = json.loads(jsontxt)
+    for i in temp:
+        itemsOld.append(i['catkey'])
+        
+    count = 30
+    logger(count,total, file)
+        
+    get = {
+    'steamid':steamid,
+    }
+    ret = apiclass.call_api('GET', 'inv/GameInventory/', params=get)
+    jsontxt = ret.text
+    temp = json.loads(jsontxt)
+    for i in temp:
+        catkey = i['catkey']
+        if catkey[0:17] == steamid:
+            gameInvOld.append(catkey[17:])
+            
+    count = 35
+    logger(count,total, file)
+            
+    itemInvOld = apiclass.getInventory(steamid)
+            
+    count = 40
+    logger(count,total, file)
+            
+    get = {
+    'steamid':steamid,
+    }
+    ret = apiclass.call_api('GET', 'inv/BadgeInventory/', params=get)
+    jsontxt = ret.text
+    temp = json.loads(jsontxt)
+    for i in temp:
+        if i['steamid'] == steamid:
+            badgeInvOld.append(i['catkey']+str(i['level']))
+    
+    #generate differences
+    old = Multiset(gamesOld)
+    new = Multiset(gameInv)
+    gameAdd = new.subtract(old)
+    
+    old = Multiset(itemsOld)
+    new = Multiset(items)
+    itemAdd = new.subtract(old)
+    
+    old = Multiset(gameInvOld)
+    new = Multiset(gameInv)
+    gameInvAdd = new.subtract(old)
+    gameInvDel = old.subtract(new)
+    
+    old = Multiset(badgeInvOld)
+    new = Multiset(badgeInv)
+    badgeAdd = new.subtract(old)
+    
+    count = 50
+    logger(count,total, file)
     
     count = 0
     total = len(gameDic)*3 + len(itemDic) + 5
             
     #add games to the games db
     for game in gameDic:
+        appid = str(game['appid'])
         count = count + 1
         logger(count, total, file)
-        apiclass.addGame(game)
+        if appid in gameAdd:
+            apiclass.addGame(game)
 
     #add games to the game inventory
     for game in gameDic:
@@ -67,7 +188,7 @@ def updateProfile(request):
         logger(count, total, file)
         
         name = game['name']
-        appid = game['appid']
+        appid = str(game['appid'])
 
         #print "inventorying", name, " ", appid
         #call api to add Games
@@ -76,23 +197,19 @@ def updateProfile(request):
         'steamid':steamid, 
         'appid':name
         }
-        apiclass.addGameInventory(post)
+        if appid in gameInvAdd:
+            apiclass.addGameInventory(post)
+            
+    #remove free trial games from inventory
+    for appid in gameInvDel:
+        catkey = steamid + appid
+        apiclass.call_api('DELETE', 'inv/ItemInventory/' + catkey + '/')
 
-
-    #add badges to the badges db
-    getstuff = steamclass.getPlayerBadges(steamid)
-
-    postDic = getstuff[0]
-    badgeDic = getstuff[1]
-    badgeDic2 = getstuff[2]
-
-    games = gameDic
 
     #print "you own", len(games), "games"
-
     i = 1
 
-    for game in games:
+    for game in gameDic:
         count = count + 1
         logger(count, total, file)
         
@@ -109,18 +226,26 @@ def updateProfile(request):
             i += 1
             for post in postDic:
                 if (post['appid'] == appid):
+                    #override id for primary key
                     post['appid'] = name
-                    apiclass.addBadge(post)
-                    apiclass.updateBadge(post['catkey'], post)
+                    catkey = post['catkey']
+                    compare = catkey + str(post['level'])
+                    if compare in badgeAdd:
+                        apiclass.addBadge(post)
+                        apiclass.updateBadge(catkey, post)
             
         if appid in badgeDic2:
             #print i, "your game", name, "(FOIL) is at level", badgeDic2[appid]
             i += 1
             for post in postDic:
                 if (post['appid'] == appid):
+                    #override id for primary key
                     post['appid'] = name
-                    apiclass.addBadge(post)
-                    apiclass.updateBadge(post['catkey'], post)
+                    catkey = post['catkey']
+                    compare = catkey + str(post['level'])
+                    if compare in badgeAdd:
+                        apiclass.addBadge(post)
+                        apiclass.updateBadge(catkey, post)
 
 
     #add items to the items db
@@ -128,10 +253,12 @@ def updateProfile(request):
     for item in itemDic:
         count = count + 1
         logger(count, total, file)
-        apiclass.addItem(item)
+        if item['catkey'] in itemAdd:
+            apiclass.addItem(item)
 
     #gen item inventory update commands
-    old = apiclass.getInventory(steamid)
+    #old = apiclass.getInventory(steamid)
+    old = itemInvOld
     new = itemDic
     dif = apiclass.invDiff(old, new)
 

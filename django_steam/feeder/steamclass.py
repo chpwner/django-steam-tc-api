@@ -90,7 +90,7 @@ def getPlayerInventory(steamid):
         name = item['market_name']
         gametype = item['type']
         game = item['tags'][0]['name']
-        appid = item['market_fee_app']
+        appid = item['tags'][0]['internal_name'][4:]
 
         if gametype.find('Trading Card') > -1:
             cardflag = 'on'
