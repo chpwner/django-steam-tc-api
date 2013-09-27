@@ -98,7 +98,7 @@ def getPlayerInventory(steamid):
             cardflag = ''
             
         names[classid] = {
-        'catkey':name+gametype,
+        'catkey':(name+gametype).replace('/','-'),
         'itemname':name,
         'itemtype':gametype,
         'game':game,

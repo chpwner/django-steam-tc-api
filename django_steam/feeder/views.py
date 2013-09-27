@@ -87,7 +87,7 @@ def updateProfile(request):
         catkey = item['catkey']
         if catkey not in items:
             items.append(catkey)
-        #catkey is itemname+itemtype
+        #catkey is (itemname+itemtype).replace('/','-')
         #append to games where applicable
         if appid not in gameInv:
             gameDic.append({'name':game, 'appid':appid})
@@ -317,7 +317,7 @@ def updatePrice(request):
         game = dic['game'] #str
         price = dic['price'] #float
 
-        catkey = item + type
+        catkey = (item + type).replace('/','-')
 
         #call api to add items to the items database
         post = {
@@ -328,16 +328,8 @@ def updatePrice(request):
         'trading_card':'on',
         'price':price
         }
-        apiclass.addItem(post)
-
-        #call api to update the items database
-        post = {
-        'catkey':catkey,
-        'itemname':item,
-        'itemtype':type,
-        'game':game,
-        'trading_card':'on',
-        'price':price
-        }
+        #PUT request functions as a POST in this context
+        #apiclass.addItem(post)
         apiclass.updateItem(catkey, post)
+        
     return HttpResponse(json.dumps(query),content_type="application/json")

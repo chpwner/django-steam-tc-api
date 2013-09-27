@@ -1,11 +1,18 @@
 import sys
 import json
 import requests
+import urllib
 from datetime import datetime
 from multiset.multiset import Multiset
 
 def call_api(method, url, **kwargs):
-    #This is not the password anymore, I assure you
+    #look for '/' in catkeys, should be accounted for elsewhere
+    if 'data' in kwargs:
+       if 'catkey' in kwargs['data']:
+            if not kwargs['data']['catkey'].find('/') == -1:
+                print kwargs['data']['catkey']
+
+    #ha ha, deleted the password
     kwargs['auth'] = ('apiadmin', '')
     return requests.request(method, 'http://192.168.1.4:82/'+url, **kwargs)
 
@@ -67,7 +74,7 @@ def updatePlayer(steamid, post):
     #'personaname':playername, 
     #'avatar':avatar
     #}
-    return call_api('PUT', 'data/Players/'+steamid, data=post).text
+    return call_api('PUT', 'data/Players/'+steamid+'/', data=post).text
     
 def addGame(post):
     #call api to add Games, post should look like this:
@@ -101,6 +108,12 @@ def addItem(post):
     return call_api('POST', 'data/Items/', data=post).text
     
 def updateItem(item, post):
+    #apply the '/' fix to the catkey and unicode
+    #catkey should not require this as it should be taken care of elsewhere
+    item = urllib.quote(item.encode('utf-8'))
+    if not item.find('/') == -1:
+        print item
+        item.replace('/','-')
     time = datetime.now()
     #call api to update items, post should look like this:
     #post = {
@@ -125,16 +138,6 @@ def updateItemInventory(old, new):
     #alias for invDiff
     return invDiff(old, new)
 
-def updateItemPrice(item, price):
-    time = datetime.now()
-    #call api to update price point on items
-    post = {
-    'itemname':item,
-    'price':price,
-    'updated':time
-    }
-    return call_api('PUT', 'data/Items/' + item + '/', data=post).text
-    
 def addBadge(post):
     #call api to add badges, post should look like this:
     #catkey = appid + badgeid + foil
