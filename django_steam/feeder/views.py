@@ -206,7 +206,7 @@ def updateProfile(request):
     #remove free trial games from inventory
     for appid in gameInvDel:
         catkey = steamid + appid
-        apiclass.call_api('DELETE', 'inv/ItemInventory/' + catkey + '/')
+        apiclass.call_api('DELETE', 'inv/GameInventory/' + catkey + '/')
 
 
     #print "you own", len(games), "games"
