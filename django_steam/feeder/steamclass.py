@@ -207,7 +207,7 @@ def doMarketQuery(name, append):
     #checks for unicode errors
     try:
         safe = name.encode('utf-8')
-        query = urllib.urlencode({'query': safe + append, 'start':0, 'count':50})
+        query = urllib.urlencode({'query': safe + append, 'start':0, 'count':99})
     except UnicodeEncodeError:
         #print name + " had a unicode encode error"
         query = ''
@@ -215,7 +215,7 @@ def doMarketQuery(name, append):
     t1 = datetime.now()
     #print "running steam market call on", name + append, "please wait..."
 
-    URL = urllib.urlopen("http://steamcommunity.com/market/search/render/?start=0&count=50&query="+query)
+    URL = urllib.urlopen("http://steamcommunity.com/market/search/render/?"+query)
     #convert json object, essentially a count and html output
     result = json.load(URL) 
     #print "done with market call", datetime.now() - t1
