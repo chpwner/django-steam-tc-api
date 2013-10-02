@@ -5,7 +5,7 @@ import urllib
 from datetime import datetime
 
 #my steam api key
-apikey = '83D8D4A59DF0AA1A7309FF01979876B6'
+apikey = ''
 
 def getPlayerInfo(steamid):
     #open url (file) resource to get profile sumarry of
@@ -126,7 +126,7 @@ def getPlayerBadges(steamid):
     #beta steam API to get badges
     # key is unique to my account, it is the api key
     # required to access the steam api
-    URL = urllib.urlopen("http://api.steampowered.com/IPlayerService/GetBadges/v0001/?key=83D8D4A59DF0AA1A7309FF01979876B6&steamid=" + steamid + "&format=json")
+    URL = urllib.urlopen("http://api.steampowered.com/IPlayerService/GetBadges/v0001/?key=" + apikey + "&steamid=" + steamid + "&format=json")
     ret = json.load(URL)
 
     #python decodes json objects to dictionaries, 
@@ -183,7 +183,7 @@ def getPlayerBadgeList(steamid):
     #beta steam API to get badges
     # key is unique to my account, it is the api key
     # required to access the steam api
-    URL = urllib.urlopen("http://api.steampowered.com/IPlayerService/GetBadges/v0001/?key=83D8D4A59DF0AA1A7309FF01979876B6&steamid=" + steamid + "&format=json")
+    URL = urllib.urlopen("http://api.steampowered.com/IPlayerService/GetBadges/v0001/?key=" + apikey + "&steamid=" + steamid + "&format=json")
     ret = json.load(URL)
     badges = ret['response']['badges']
     retval = []
