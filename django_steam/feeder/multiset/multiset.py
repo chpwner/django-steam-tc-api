@@ -64,8 +64,8 @@ class Multiset:
         return united
     
     def subtract(self, anotherSet):
-        list1 = self.elements[:]
-        list2 = anotherSet.elements[:]
+        list1 = list(self.elements)
+        list2 = list(anotherSet.elements)
         intersect = self.intersection(anotherSet)
         for i in range(len(intersect)):
             list1.remove(intersect[i])
