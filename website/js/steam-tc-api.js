@@ -324,7 +324,7 @@ function updateTable(id) {
             if (!(parse.trading_card) && pstore.done == 1) {
                 continue;
             }
-            var idhash = 'hc' + parse.itemname.hashCode();
+            var idhash = 'hc' + (parse.itemname + parse.itemtype).hashCode();
             if (cards[idhash]) {
                 cards[idhash]['quanity']++;
             } else {
@@ -359,7 +359,7 @@ function updateTable(id) {
             if (!(parse.trading_card)) {
                 continue;
             }
-            var hash = 'hc' + parse.itemname.hashCode();
+            var hash = 'hc' + (parse.itemname + parse.itemtype).hashCode();
             if (cards[hash] && parse.itemtype.indexOf('Foil') == -1) {
                 owned++;
             } else if (cards[hash] && parse.itemtype.indexOf('Foil') != -1) {
@@ -493,7 +493,7 @@ function gameLookup(self) {
             if (!(parse.trading_card)) {
                 continue;
             }
-            var idhash = 'hc' + parse.itemname.hashCode();
+            var idhash = 'hc' + (parse.itemname + parse.itemtype).hashCode();
             if (cards[idhash]) {
                 cards[idhash]['quanity']++;
             } else {
@@ -543,7 +543,7 @@ function gameLookup(self) {
         }
         //skip non trading cards and foils
         if (parse.trading_card == true && parse.itemtype.indexOf('Foil') == -1) {
-            var hash = 'hc' + parse.itemname.hashCode();
+            var hash = 'hc' + (parse.itemname + parse.itemtype).hashCode();
             $('#cardlist').append('<td><a target="_blank" href="http://steamcommunity.com/market/listings/753/' + jd.appid + '-' + parse.itemname + '">' + parse.itemname + '</a></td>');
             $('#price').append('<td>' + parse.price + '</td>');
             $('#updated').append('<td>' + parse.updated + '</td>');
@@ -565,7 +565,7 @@ function gameLookup(self) {
         }
         //skip nontrading cards
         if (parse.trading_card == true && parse.itemtype.indexOf('Foil') != -1) {
-            var hash = 'hc' + parse.itemname.hashCode();
+            var hash = 'hc' + (parse.itemname + parse.itemtype).hashCode();
             $('#cardlist').append('<td><a target="_blank" href="http://steamcommunity.com/market/listings/753/' + jd.appid + '-' + parse.itemname + '">' + parse.itemname + '</a></td>');
             $('#price').append('<td>' + parse.price + '</td>');
             $('#updated').append('<td>' + parse.updated + '</td>');

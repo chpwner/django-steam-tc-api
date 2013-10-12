@@ -255,7 +255,7 @@ def doMarketQuery(name, append):
         #check to see if query result is in fact for the game selected on player profile
         if game == name + " Trading Card" or game == name + " Foil Trading Card":
             #print "++" + item + " is of type " + game + " and costs $" + price
-            datestr = datetime.now().strftime("%I:%M:%S %p %x")
+            datestr = datetime.now().strftime("%H:%M:%S %x")
             retval.append({'updated':datestr,'trading_card':True,'itemtype':game,'price':float(price),'game':name,'itemname':item})
         else:
             #print "--" + item + " is of type " + game + " and not of type " + name

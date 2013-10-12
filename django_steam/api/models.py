@@ -28,7 +28,7 @@ class Items(models.Model):
         "itemtype":self.itemtype,
         "trading_card":self.trading_card,
         "price":self.price,
-        "updated":self.updated.strftime("%I:%M:%S %p %x"),
+        "updated":self.updated.strftime("%H:%M:%S %x"),
         "game":str(self.game)
         }
 
