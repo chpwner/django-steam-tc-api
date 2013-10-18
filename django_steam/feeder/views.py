@@ -234,7 +234,6 @@ def updateProfile(request):
                     catkey = post['catkey']
                     compare = catkey + str(post['level'])
                     if compare in badgeAdd:
-                        apiclass.addBadge(post)
                         apiclass.updateBadge(catkey, post)
             
         if appid in badgeDic2:
@@ -247,7 +246,6 @@ def updateProfile(request):
                     catkey = post['catkey']
                     compare = catkey + str(post['level'])
                     if compare in badgeAdd:
-                        apiclass.addBadge(post)
                         apiclass.updateBadge(catkey, post)
 
 
