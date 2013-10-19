@@ -108,7 +108,7 @@ function loader() {
 var store = {};
 
 function webstuff(spinner, callback) {
-    $.getJSON('https://api.chpwner.org/data/Games/', function (games) {
+    $.getJSON('https://api.steamcardsheet.com/data/Games/', function (games) {
         var length = games.length;
         var c = 0;
         var ctotal = 0;
@@ -230,7 +230,7 @@ function getUser(form) {
 
         return ('no id entered');
     }
-    $.getJSON('https://api.chpwner.org/data/Players/', data, function (profile) {
+    $.getJSON('https://api.steamcardsheet.com/data/Players/', data, function (profile) {
         var profile = profile[0];
         if (!(profile)) {
             //reset pstore
@@ -600,7 +600,7 @@ function updatePrice(btn, callback) {
     //set color flag
     jqRow.attr('class', 'info');
 
-    $.getJSON("https://api.chpwner.org/update/price/", {
+    $.getJSON("https://api.steamcardsheet.com/update/price/", {
         'game': game
     }, function (data) {
         //compiled stats
@@ -711,7 +711,7 @@ function updateProfile(form) {
 
     //get the profile loading
     $.ajax({
-        url: "https://api.chpwner.org/update/profile/",
+        url: "https://api.steamcardsheet.com/update/profile/",
         data: {
             'steamid': steamid
         },
@@ -769,7 +769,7 @@ function ajaxCall(count) {
     count++;
 
     $.ajax({
-        url: "https://api.chpwner.org/steam/logger/" + pstore.steamid,
+        url: "https://api.steamcardsheet.com/steam/logger/" + pstore.steamid,
         cache: false
     })
         .done(function (data) {            
