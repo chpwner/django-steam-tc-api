@@ -104,11 +104,47 @@ function loader() {
         spinner.stop();
     });
 }
+//globals?
+var tr;
+var p = "not a null";
+var pstore = {};
 //globalstore
 var store = {};
+var raw = [];
 
 function webstuff(spinner, callback) {
     $.getJSON('https://api.steamcardsheet.com/data/Games/', function (games) {
+        raw = games;
+	drawTbl(games);
+    //hide button
+    //var p; is global now
+    $("#toggle").click(function () {
+        if (p) {
+            console.log("unclicked");
+            //no need to append, redrawn
+            //p.appendTo("#stage");
+            p = null;
+            redoTbl('hard');
+            //$("#datatable").trigger("update");
+            $("#toggle").text('Hide Noncard Games');
+        } else {
+            console.log("clicked");
+            p = $("tr.noncardrow").detach();
+            redoTbl('hard');
+            //$("#datatable").trigger("update");
+            $("#toggle").text('Show Noncard Games');
+        }
+    });
+    }).fail(function (jqxhr, textStatus, error) {
+        var err = textStatus + ', ' + error;
+        $('#error').append('Request Failed ' + err);
+    }).always(function(){
+        spinner.stop();
+    })
+}
+
+function drawTbl(games){
+   console.log("new table");
         var length = games.length;
         var c = 0;
         var ctotal = 0;
@@ -159,25 +195,27 @@ function webstuff(spinner, callback) {
                 c++;
                 ctotal = ctotal + jd.count + jd.fcount;
             } else {
+              if (p == null){
                 $('#stage').append('<tr id="' + jd.idhash + '" class="noncardrow"><td class="jdname">' + jd.name + '</td><td class="jdcount">0</td><td class="cardsowned">0</td><td class="fcardsowned">0</td><td class="percentage">0%</td><td class="lvl">0</td><td class="flvl">0</td><td class="jdavg">0</td><td class="jdfavg">0</td><td class="ccs">0</td><td class="ccfs">0</td><td class="jdtime">0</td><td><button type="button" class="btn btn-small upbtn" name="update" value="' + jd.name + '" id="' + jd.appid + '" data-loading-text="Loading...">update</button></td><\/tr>');
-            }
+              }
+           }
         }
-        //table sorter
-        $("#datatable").tablesorter();
-        //spinner stopper callback
-        callback(spinner);
         //some jquery setup
         $('#searchBtn').attr('disabled', false);
         $('#gamecount').text('Game Count: ' + length);
         $('#itemcount').text('Card Count: ' + ctotal);
         $('#badgecount').text('Badge Count: ' + c * 2);
-        //load buttons
-        buttons();
-    }).fail(function (jqxhr, textStatus, error) {
-        spinner.stop();
-        var err = textStatus + ', ' + error;
-        $('#error').append('Request Failed ' + err);
-    })
+        //load buttons and tablesorter
+        //price update button
+        $('.upbtn')
+        .click(function () {
+            var btn = $(this);
+            btn.button('loading');
+            updatePrice(btn, function (btn) {
+                btn.button('reset');
+            });
+        })
+        tableSort();
 }
 
 function validateID(InString) {
@@ -190,21 +228,20 @@ function validateID(InString) {
     }
     return (true);
 }
-//globals?
-var tr;
-var p;
-var pstore = {};
 
 function getUser(form) {
+    //redraw table
+    redoTbl();
+
     //disable some buttons
     $('#sub').attr('disabled', true);
     //hide progress bar
     $('#infobar').attr('style', 'display:none');
 
-    //reset hide if applicable
-    if (p) {
-        $('#toggle').trigger('click');
-    }
+    //reset hide if applicable, done via reload
+    //if (p) {
+    //    $('#toggle').trigger('click');
+    //}
 
     //reset flags
     $('#stage').children('tr.flag').removeClass('flag');
@@ -279,7 +316,7 @@ function getUser(form) {
         //remove nonflagged
         tr = $('#stage').children('tr:not(tr.flag)').detach();
         //update tablesorter
-        $("#datatable").trigger("update");
+        tableSort();
 
         //reenable buttons
         $('#sub').attr('disabled', false);
@@ -425,40 +462,7 @@ function updateTable(id) {
     }
 }
 
-function buttons() {
-    //game info trigger
-    $('#stage').children().click(function () {
-        gameLookup(this);
-        location.href = "#top";
-    });
 
-    //price update button
-    $('.upbtn')
-        .click(function () {
-            var btn = $(this);
-            btn.button('loading');
-            updatePrice(btn, function (btn) {
-                btn.button('reset');
-            });
-        })
-
-    //hide button
-    //var p; is global now
-    $("#toggle").click(function () {
-        if (p) {
-            console.log("unclicked");
-            p.appendTo("#stage");
-            p = null;
-            $("#datatable").trigger("update");
-            $("#toggle").text('Hide Noncard Games');
-        } else {
-            console.log("clicked");
-            p = $("tr.noncardrow").detach();
-            $("#datatable").trigger("update");
-            $("#toggle").text('Show Noncard Games');
-        }
-    });
-}
 //disable enter key so user has to click buttons
 $(document).keypress(
     function (event) {
@@ -466,118 +470,6 @@ $(document).keypress(
             event.preventDefault();
         }
     });
-
-function gameLookup(self) {
-    var id = $(self).attr('id');
-    var jd = store[id];
-    var gamename = jd.name;
-    var cards = {};
-    var badgeObj = {};
-
-    //clear old data
-    $('#gameinfo').find('tr').empty();
-    //write title
-    $('#gametitle').text(gamename);
-
-    //check if profile data loaded
-    if (pstore && jd.count > 0) {
-        //manipulate items to get assoc array of hashcodes
-        //for the most part json str are goning to be the same
-        //unless an update was triggered after getting composite data
-        //but before getting the profile
-        var items = pstore.items;
-        for (var i in items) {
-            var jsonstring = items[i];
-            var parse = JSON.parse(jsonstring);
-            //skip nontrading cards
-            if (!(parse.trading_card)) {
-                continue;
-            }
-            var idhash = 'hc' + (parse.itemname + parse.itemtype).hashCode();
-            if (cards[idhash]) {
-                cards[idhash]['quanity']++;
-            } else {
-                cards[idhash] = {
-                    'itemname': parse.itemname,
-                    'quanity': 1
-                };
-            }
-        }
-
-        var badges = pstore.badges;
-        for (var j in badges) {
-            var badge = badges[j];
-            var pos = badge.indexOf(' (Lvl:');
-            var badgename = badge.substring(0, pos);
-            var sets = badge.substring(pos + 6, pos + 7)
-            var idhash = 'g' + badgename.hashCode();
-            badgeObj[idhash] = sets;
-        }
-        if (badgeObj[id]) {
-            str = "<td>player has " + badgeObj[id] + " complete set(s)" + " :) ".repeat(badgeObj[id]) + '</td>';
-            if (badgeObj[id] == 5) {
-                str = "<td>player has completed all 5 sets! :D</td>"
-            }
-        } else {
-            str = "<td>player has no complete sets :(</td>";
-        }
-        $('#cardlist').prepend("<td>Cards</td>");
-
-        var fid = 'g' + (gamename + ' (Foil)').hashCode();
-        if (badgeObj[fid]) {
-            str = "<td>player has a complete FOIL set!! XD</td>";
-        } else {
-            str = "<td>player does not have a complete FOIL set :/</td>";
-        }
-        $('#inventory').prepend('<td>Player Owns</td>');
-        $('#updated').prepend("<td>Updated</td>");
-        $('#price').prepend('<td><a target="_blank" href="http://steamcommunity.com/market/search?q=' + gamename + ' trading card">Market Price</a></td>');
-    }
-
-    for (var k in jd.cards) {
-        var jsonstring = jd.cards[k];
-        if (typeof (jsonstring) === "object") {
-            parse = jsonstring;
-        } else {
-            var parse = JSON.parse(jsonstring);
-        }
-        //skip non trading cards and foils
-        if (parse.trading_card == true && parse.itemtype.indexOf('Foil') == -1) {
-            var hash = 'hc' + (parse.itemname + parse.itemtype).hashCode();
-            $('#cardlist').append('<td><a target="_blank" href="http://steamcommunity.com/market/listings/753/' + jd.appid + '-' + parse.itemname + '">' + parse.itemname + '</a></td>');
-            $('#price').append('<td>' + parse.price + '</td>');
-            $('#updated').append('<td>' + parse.updated + '</td>');
-            if (cards[hash]) {
-                str = parse.itemname + ' (' + cards[hash]['quanity'] + ')';
-            } else {
-                str = "&nbsp;";
-            }
-            $('#inventory').append('<td>' + str + '</td>');
-        }
-    }
-
-    for (var k in jd.cards) {
-        var jsonstring = jd.cards[k];
-        if (typeof (jsonstring) === "object") {
-            parse = jsonstring;
-        } else {
-            var parse = JSON.parse(jsonstring);
-        }
-        //skip nontrading cards
-        if (parse.trading_card == true && parse.itemtype.indexOf('Foil') != -1) {
-            var hash = 'hc' + (parse.itemname + parse.itemtype).hashCode();
-            $('#cardlist').append('<td><a target="_blank" href="http://steamcommunity.com/market/listings/753/' + jd.appid + '-' + parse.itemname + '">' + parse.itemname + '</a></td>');
-            $('#price').append('<td>' + parse.price + '</td>');
-            $('#updated').append('<td>' + parse.updated + '</td>');
-            if (cards[hash]) {
-                str = parse.itemname + ' (' + cards[hash]['quanity'] + ')';
-            } else {
-                str = "&nbsp;";
-            }
-            $('#inventory').append('<td>' + str + '</td>');
-        }
-    }
-}
 
 function updatePrice(btn, callback) {
     var jqBtn = $(btn);
@@ -784,4 +676,188 @@ function ajaxCall(count) {
 
 function modal(){
     $('#invModal').modal()
+}
+
+function redoTbl(flag){
+var tableHTML = '\
+        <table class="table table-bordered table-hover tablesorter" id="datatable">\
+        <thead>\
+        <tr>\
+          <th>Name</th>\
+          <th>Cards Per Set</th>\
+          <th>Cards Owned</th>\
+          <th>Foil Cards Owned</th>\
+          <th>Percent Complete</th>\
+          <th>Complete Sets</th>\
+          <th>Complete Foil Sets</th>\
+          <th>Avg Card Cost</th>\
+          <th>Avg Foil Card Cost</th>\
+          <th>Cost to Complete Set</th>\
+          <th>Cost to Complete Foil Set</th>\
+          <th>Prices Last Updated</th>\
+          <th></th>\
+        </tr>\
+        </thead>\
+        <tbody id="stage">\
+        </tbody>\
+        </table>\
+';
+
+//built in function to revert table
+$('#datatable').dataTable().fnDestroy()
+
+if (flag == 'hard'){
+    console.log("hard reset");
+    $('#tablediv').html(tableHTML);
+    drawTbl(raw);
+   }else{
+    console.log("soft reset");
+   }
+}
+
+function gameLookup(self) {
+    var id = $(self).attr('id');
+    var jd = store[id];
+    var gamename = jd.name;
+    var cards = {};
+    var badgeObj = {};
+
+    //clear old data
+    $('#gameinfo').find('tr').empty();
+    //write title
+    $('#gametitle').text(gamename);
+
+    //check if profile data loaded
+    if (pstore && jd.count > 0) {
+        //manipulate items to get assoc array of hashcodes
+        //for the most part json str are goning to be the same
+        //unless an update was triggered after getting composite data
+        //but before getting the profile
+        var items = pstore.items;
+        for (var i in items) {
+            var jsonstring = items[i];
+            var parse = JSON.parse(jsonstring);
+            //skip nontrading cards
+            if (!(parse.trading_card)) {
+                continue;
+            }
+            var idhash = 'hc' + (parse.itemname + parse.itemtype).hashCode();
+            if (cards[idhash]) {
+                cards[idhash]['quanity']++;
+            } else {
+                cards[idhash] = {
+                    'itemname': parse.itemname,
+                    'quanity': 1
+                };
+            }
+        }
+
+        var badges = pstore.badges;
+        for (var j in badges) {
+            var badge = badges[j];
+            var pos = badge.indexOf(' (Lvl:');
+            var badgename = badge.substring(0, pos);
+            var sets = badge.substring(pos + 6, pos + 7)
+            var idhash = 'g' + badgename.hashCode();
+            badgeObj[idhash] = sets;
+        }
+        if (badgeObj[id]) {
+            str = "<td>player has " + badgeObj[id] + " complete set(s)" + " :) ".repeat(badgeObj[id]) + '</td>';
+            if (badgeObj[id] == 5) {
+                str = "<td>player has completed all 5 sets! :D</td>"
+            }
+        } else {
+            str = "<td>player has no complete sets :(</td>";
+        }
+        $('#cardlist').prepend("<td>Cards</td>");
+
+        var fid = 'g' + (gamename + ' (Foil)').hashCode();
+        if (badgeObj[fid]) {
+            str = "<td>player has a complete FOIL set!! XD</td>";
+        } else {
+            str = "<td>player does not have a complete FOIL set :/</td>";
+        }
+        $('#inventory').prepend('<td>Player Owns</td>');
+        $('#updated').prepend("<td>Updated</td>");
+        $('#price').prepend('<td><a target="_blank" href="http://steamcommunity.com/market/search?q=' + gamename + ' trading card">Market Price</a></td>');
+    }
+
+    for (var k in jd.cards) {
+        var jsonstring = jd.cards[k];
+        if (typeof (jsonstring) === "object") {
+            parse = jsonstring;
+        } else {
+            var parse = JSON.parse(jsonstring);
+        }
+        //skip non trading cards and foils
+        if (parse.trading_card == true && parse.itemtype.indexOf('Foil') == -1) {
+            var hash = 'hc' + (parse.itemname + parse.itemtype).hashCode();
+            $('#cardlist').append('<td><a target="_blank" href="http://steamcommunity.com/market/listings/753/' + jd.appid + '-' + parse.itemname + '">' + parse.itemname + '</a></td>');
+            $('#price').append('<td>' + parse.price + '</td>');
+            $('#updated').append('<td>' + parse.updated + '</td>');
+            if (cards[hash]) {
+                str = parse.itemname + ' (' + cards[hash]['quanity'] + ')';
+            } else {
+                str = "&nbsp;";
+            }
+            $('#inventory').append('<td>' + str + '</td>');
+        }
+    }
+
+    for (var k in jd.cards) {
+        var jsonstring = jd.cards[k];
+        if (typeof (jsonstring) === "object") {
+            parse = jsonstring;
+        } else {
+            var parse = JSON.parse(jsonstring);
+        }
+        //skip nontrading cards
+        if (parse.trading_card == true && parse.itemtype.indexOf('Foil') != -1) {
+            var hash = 'hc' + (parse.itemname + parse.itemtype).hashCode();
+            $('#cardlist').append('<td><a target="_blank" href="http://steamcommunity.com/market/listings/753/' + jd.appid + '-' + parse.itemname + '">' + parse.itemname + '</a></td>');
+            $('#price').append('<td>' + parse.price + '</td>');
+            $('#updated').append('<td>' + parse.updated + '</td>');
+            if (cards[hash]) {
+                str = parse.itemname + ' (' + cards[hash]['quanity'] + ')';
+            } else {
+                str = "&nbsp;";
+            }
+            $('#inventory').append('<td>' + str + '</td>');
+        }
+    }
+}
+
+function tableSort(){
+    console.log("sortify");
+    //table sorter
+
+    var attachme = $('#datatable tbody tr');
+    //remove old events before attaching new ones
+    attachme.off();
+    attachme.on('click', function () {
+        var nTr = this;
+        gameLookup(nTr);
+        if ( oTable.fnIsOpen(nTr) )
+        {
+            /* This row is already open - close it */
+            oTable.fnClose( nTr );
+            console.log("close");
+        }
+        else
+        {
+            /* Open this row */
+            oTable.fnOpen( nTr, $('#gameinfo').clone(), "details" );
+            $(this).next().find('*').attr('style','background-color:white');
+            console.log("open");
+        }
+    });    
+
+    //$("#datatable").dataTable({"bPaginate": false});
+    //$("#datatable").dataTable({"aLengthMenu": [[10, 50, 100, -1], [10, 50, 100, "All"]]});
+    var oTable = $('#datatable').dataTable( {
+        "aoColumnDefs": [
+            { "bSortable": false, "aTargets": [-1] }
+        ],
+        "aLengthMenu":[[10,50,100,-1],[10,50,100,"All"]]
+    });
 }

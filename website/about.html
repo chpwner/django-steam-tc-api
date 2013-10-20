@@ -3,11 +3,12 @@
 <head>
   <title>Interactive Steam Trading Card Sheet Help</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="css/bootstrap.css" rel="stylesheet" media="screen" type="text/css">
+  <link href="css/bootstrap.min.css" rel="stylesheet" media="screen" type="text/css">
+  <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
   <script type="text/javascript">
+
   var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-44186250-1']);
-  _gaq.push(['_setDomainName', 'chpwner.org']);
+  _gaq.push(['_setAccount', 'UA-44186250-2']);
   _gaq.push(['_trackPageview']);
 
   (function() {
@@ -15,6 +16,7 @@
     ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
   })();
+
   </script>
 </head>
 <body>
@@ -23,7 +25,7 @@
     <div class="span12">
         <div class="navbar">
           <div class="navbar-inner">
-            <a class="brand span2" href="../">Chpwner.org</a>
+            <a class="brand" href="../">Steam Card Sheet</a>
             <ul class="nav">
               <li><a href="index.html">Steam TC Table</a></li>
               <li><a href="help.html">Help</a></li>
@@ -40,8 +42,8 @@
     <form id="userform">
       Steam name or id:</br>
       <input type="text" name="steamid" class="span12"><br/>
-      <button type="button" class="btn" name="searchBtn" id="searchBtn" onClick="getUser(this.form)" disabled=true>Load Profile</button>
-      <button type="button" class="btn" name="sub" id="sub" onClick="updateProfile(this.form)" disabled=true>Update Profile</button>
+      <button type="button" class="btn" name="searchBtn" id="searchBtn" disabled=true>Load Profile</button>
+      <button type="button" class="btn" name="sub" id="sub" disabled=true>Update Profile</button>
     </form>
     <div id="infobar" style="display:none">
     <p id="stats"></p>
@@ -99,7 +101,7 @@
 	spin.js - <a href="http://fgnass.github.io/spin.js/">fgnass.github.io</a> - for his js spinner animation
 	</p>
 	<p>
-	tablesorter - <a href="http://tablesorter.com">tablesorter.com</a> - for the neat js table sorting script
+	datatables - <a href="http://datatables.net">datatables.net</a> - for the robust js table plugin
 	</p>
 	<p>
 	jquery - <a href="http://jquery.com">jquery.com</a> - let's face it who doesn't use jquery
@@ -117,5 +119,22 @@
     </div>
   </div>
 </div>
+<!-- Start of StatCounter Code for Default Guide -->
+<script type="text/javascript">
+var sc_project=9320771; 
+var sc_invisible=0; 
+var sc_security="949620f2"; 
+var scJsHost = (("https:" == document.location.protocol) ?
+"https://secure." : "http://www.");
+document.write("<sc"+"ript type='text/javascript' src='" +
+scJsHost+
+"statcounter.com/counter/counter.js'></"+"script>");
+</script>
+<noscript><div class="statcounter"><a title="click tracking"
+href="http://statcounter.com/" target="_blank"><img
+class="statcounter"
+src="http://c.statcounter.com/9320771/0/949620f2/0/"
+alt="click tracking"></a></div></noscript>
+<!-- End of StatCounter Code for Default Guide -->
 </body>
 </html>
