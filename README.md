@@ -16,4 +16,4 @@ The website front end has the following dependencies:
 * Bootstrap
 * Jquery
 * JS-Spinner
-* tablesorter
+* datatables
