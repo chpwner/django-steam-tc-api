@@ -66,13 +66,20 @@ def getPlayerInventory(steamid):
     # the former tells you how many items you have, 
     # the latter the names of those items
     inventory = json.load(URL)
-    
-    # inventory dictionary items
-    itemsDic = inventory['rgInventory']
+ 
     itemarray = []
 
+    #Check private profile
+    if 'rgInventory' not in inventory:
+        return itemarray
+
+    # inventory dictionary items
+    itemsDic = inventory['rgInventory']
+
+    #Check if inventory blank
     if not itemsDic:
         return itemarray
+
     # k is key is the same as classid
     # classid is steams terminology for the type of item (ie trading card)
     # creates a list of items by their ID
