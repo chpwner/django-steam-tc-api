@@ -6,17 +6,15 @@
   <link href="css/bootstrap.min.css" rel="stylesheet" media="screen" type="text/css">
   <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
   <script type="text/javascript">
-
   var _gaq = _gaq || [];
   _gaq.push(['_setAccount', 'UA-44186250-2']);
   _gaq.push(['_trackPageview']);
 
   (function() {
     var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    ga.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'stats.g.doubleclick.net/dc.js';
     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
   })();
-
   </script>
 </head>
 <body>
@@ -30,7 +28,7 @@
               <li><a href="index.html">Steam TC Table</a></li>
               <li><a href="help.html">Help</a></li>
               <li class="active"><a href="about.html">About</a></li>
-              <li></li>
+              <li><a href="api.html">API</a></li>
             </ul>
           </div>
         </div>
@@ -71,19 +69,8 @@
       <h1>Interactive Steam Trading Card Sheet</h1>
       <h2>By Chpwner</h2>
       </div>
-      <a href="#top"></a>
-      <div id="gameinfo">
-        <table class="table table-bordered">
-        <caption id="gametitle"></caption>
-        <tbody>
-        <tr id="cardlist"></tr>
-        <tr id="price"></tr>
-        <tr id="updated"></tr>
-        <tr id="inventory"></tr>
-        </tbody>
-        </table>
-      </div>
-      <div id="error">
+      <hr>
+      <div>
       <h3>About</h3>
       <p>
 	This is an interactive steam trading card website <br/>

@@ -3,23 +3,24 @@
 <head>
   <title>Interactive Steam Trading Card Sheet</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="css/bootstrap.css" rel="stylesheet" media="screen" type="text/css">
-  <script src="js/jquery-1.10.2.js"></script>
-  <script src="js/bootstrap.js"></script>
+  <link href="css/bootstrap.min.css" rel="stylesheet" media="screen" type="text/css">
+  <script src="js/jquery-1.10.2.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
   <script src="js/spin.min.js" type="text/javascript"></script>
-  <script src="js/jquery.dataTables.js" type="text/javascript"></script>
+  <script src="js/jquery.dataTables.min.js" type="text/javascript"></script>
   <link href="css/jquery.dataTables.css" rel="stylesheet" type="text/css">
+  <script src="js/money.min.js"></script>
   <script src="js/steam-tc-api.js"></script>
   <script type="text/javascript">
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-44186250-2']);
-    _gaq.push(['_trackPageview']);
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-44186250-2']);
+  _gaq.push(['_trackPageview']);
 
-    (function() {
+  (function() {
     var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    ga.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'stats.g.doubleclick.net/dc.js';
     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-    })();
+  })();
   </script>
 </head>
 <body>
@@ -33,7 +34,7 @@
               <li class="active"><a href="index.html">Steam TC Table</a></li>
               <li><a href="help.html">Help</a></li>
               <li><a href="about.html">About</a></li>
-              <li></li>
+              <li><a href="api.html">API</a></li>
             </ul>
             <div class="text-right"><button type="button" id="toggle" class="btn btn-info">Show Noncard Games</button></div>
           </div>
@@ -48,6 +49,15 @@
       <input type="text" name="steamid" class="span12"><br/>
       <button type="button" class="btn" name="searchBtn" id="searchBtn" onClick="getUser(this.form)" disabled=true>Load Profile</button>
       <button type="button" class="btn" name="sub" id="sub" onClick="updateProfile(this.form)" disabled=true>Update Profile</button>
+      <select id="moneyList" onchange="curr()">
+        <option>USD</option>
+        <option>EUR</option>
+        <option>CAD</option>
+        <option>GBP</option>  
+        <option>RUB</option>
+        <option>JPY</option>
+        <option>INR</option>
+      </select>
     </form>
     <div id="infobar" style="display:none">
     <p id="stats"></p>
@@ -148,7 +158,10 @@
       </p>
       <p>
       This site uses a local cache of Steam's information, so it is not always up to date. <br/>
-      Various update buttons are located on the page to gather new information. </p>
+      To update game cards and prices, click the update button located at the right of each row. <br/>
+      To update your game list, inventory, and badges use the update profile button. 
+      <p>Note: Your 17-digit steamid is required on initial sync, but your profile name can be used thereafter</p>
+      </p>
       <p>Start by loading all games into the table:</p>
       <p>
       <button class="btn btn-primary" onClick="loader()">Load Page</button>

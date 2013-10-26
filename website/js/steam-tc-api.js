@@ -2,11 +2,11 @@
 //super awesome numerical hash, no really a lifesaver!
 String.prototype.hashCode = function () {
     var hash = 0,
-        i, char;
+        ig, charg;
     if (this.length == 0) return hash;
-    for (i = 0, l = this.length; i < l; i++) {
-        char = this.charCodeAt(i);
-        hash = ((hash << 5) - hash) + char;
+    for (ig = 0, l = this.length; ig < l; ig++) {
+        charg = this.charCodeAt(ig);
+        hash = ((hash << 5) - hash) + charg;
         hash |= 0; // Convert to 32bit integer
     }
     return hash;
@@ -111,6 +111,9 @@ var pstore = {};
 //globalstore
 var store = {};
 var raw = [];
+var currency = 'USD';
+var curpre = '$';
+var cursuf = '';
 
 function webstuff(spinner, callback) {
     $.getJSON('https://api.steamcardsheet.com/data/Games/', function (games) {
@@ -164,12 +167,14 @@ function drawTbl(games){
                 var parse = JSON.parse(jsonstring);
                 var time = "";
                 if (parse.trading_card == true && parse.itemtype.indexOf("Foil") == -1) {
+                    parse.price = fx.convert(parse.price, {from: "USD", to: currency});
                     //override cards with price to get array of prices of cards
                     //jd.cards[j] = parse.price;
                     jd.time = parse.updated;
                     jd.sum = jd.sum + parse.price;
                     jd.count++;
                 } else if (parse.trading_card == true && parse.itemtype.indexOf("Foil") != -1) {
+                    parse.price = fx.convert(parse.price, {from: "USD", to: currency});
                     //override cards with price to get array of prices of cards
                     //jd.cards[j] = "foil "+ parse.price;
                     jd.time = parse.updated;
@@ -191,7 +196,7 @@ function drawTbl(games){
                 } else {
                     flag = '';
                 }
-                $('#stage').append('<tr id="' + jd.idhash + '" class="cardrow' + flag + '"><td class="jdname">' + jd.name + '</td><td class="jdcount">' + jd.count + '/' + jd.fcount + '</td><td class="cardsowned">0</td><td class="fcardsowned">0</td><td class="percentage">0%</td><td class="lvl">0</td><td class="flvl">0</td><td class="jdavg">' + jd.avg + '</td><td class="jdfavg">' + jd.favg + '</td><td class="ccs">' + jd.ccs + '</td><td class="ccfs">' + jd.ccfs + '</td><td class="jdtime">' + jd.time + '</td><td><button type="button" class="btn btn-small upbtn" name="update" value="' + jd.name + '" id="' + jd.appid + '" data-loading-text="Loading...">update</button></td><\/tr>');
+                $('#stage').append('<tr id="' + jd.idhash + '" class="cardrow' + flag + '"><td class="jdname">' + jd.name + '</td><td class="jdcount">' + jd.count + '/' + jd.fcount + '</td><td class="cardsowned">0</td><td class="fcardsowned">0</td><td class="percentage">0%</td><td class="lvl">0</td><td class="flvl">0</td><td class="jdavg">' + curpre + jd.avg + cursuf + '</td><td class="jdfavg">' + curpre +  jd.favg + cursuf + '</td><td class="ccs">' + curpre + jd.ccs + cursuf + '</td><td class="ccfs">' + curpre + jd.ccfs + cursuf + '</td><td class="jdtime">' + jd.time + '</td><td><button type="button" class="btn btn-small upbtn" name="update" value="' + jd.name + '" id="' + jd.appid + '" data-loading-text="Loading...">update</button></td><\/tr>');
                 c++;
                 ctotal = ctotal + jd.count + jd.fcount;
             } else {
@@ -237,11 +242,6 @@ function getUser(form) {
     $('#sub').attr('disabled', true);
     //hide progress bar
     $('#infobar').attr('style', 'display:none');
-
-    //reset hide if applicable, done via reload
-    //if (p) {
-    //    $('#toggle').trigger('click');
-    //}
 
     //reset flags
     $('#stage').children('tr.flag').removeClass('flag');
@@ -415,10 +415,10 @@ function updateTable(id) {
         }
 
         var ccs = ((jd.count - owned) * jd.avg).toFixed(2);
-        $('#' + id).children('td.ccs').text(ccs);
+        $('#' + id).children('td.ccs').html(curpre + ccs + cursuf);
 
         var ccfs = ((jd.fcount - fowned) * jd.favg).toFixed(2);
-        $('#' + id).children('td.ccfs').text(ccfs);
+        $('#' + id).children('td.ccfs').html(curpre + ccfs + cursuf);
 
         var badges = pstore.badges;
         for (var j in badges) {
@@ -507,6 +507,7 @@ function updatePrice(btn, callback) {
         for (var i in data) {
             var card = data[i];
             time = card.updated;
+            card.price = fx.convert(card.price, {from: "USD", to: currency});
             if (card.itemtype.indexOf('Foil') == -1) {
                 //card is not foil
                 sum = sum + card.price;
@@ -525,13 +526,13 @@ function updatePrice(btn, callback) {
 
         jqRow.children('td.jdtime').text(time);
         if (occfs != "Maxed!") {
-            jqRow.children('td.ccfs').text(ccfs);
+            jqRow.children('td.ccfs').html(curpre + ccfs + cursuf);
         }
         if (occs != "Maxed!") {
-            jqRow.children('td.ccs').text(ccs);
+            jqRow.children('td.ccs').html(curpre + ccs + cursuf);
         }
-        jqRow.children('td.jdfavg').text(favg);
-        jqRow.children('td.jdavg').text(avg);
+        jqRow.children('td.jdfavg').html(curpre + favg + cursuf);
+        jqRow.children('td.jdavg').html(curpre + avg + cursuf);
         jqRow.children('td.jdcount').text(count + '/' + fcount);
 
         //store them
@@ -703,6 +704,12 @@ var tableHTML = '\
         </table>\
 ';
 
+//check to see if page is loaded
+if ($('#error').text()){
+console.log("page is not loaded");
+return 'page is not loaded';
+}
+
 //built in function to revert table
 $('#datatable').dataTable().fnDestroy()
 
@@ -791,9 +798,10 @@ function gameLookup(self) {
         }
         //skip non trading cards and foils
         if (parse.trading_card == true && parse.itemtype.indexOf('Foil') == -1) {
+            parse.price = fx.convert(parse.price, {from: "USD", to: currency}).toFixed(2);
             var hash = 'hc' + (parse.itemname + parse.itemtype).hashCode();
             $('#cardlist').append('<td><a target="_blank" href="http://steamcommunity.com/market/listings/753/' + jd.appid + '-' + parse.itemname + '">' + parse.itemname + '</a></td>');
-            $('#price').append('<td>' + parse.price + '</td>');
+            $('#price').append('<td>' + curpre + parse.price + cursuf + '</td>');
             $('#updated').append('<td>' + parse.updated + '</td>');
             if (cards[hash]) {
                 str = parse.itemname + ' (' + cards[hash]['quanity'] + ')';
@@ -813,9 +821,10 @@ function gameLookup(self) {
         }
         //skip nontrading cards
         if (parse.trading_card == true && parse.itemtype.indexOf('Foil') != -1) {
+            parse.price = fx.convert(parse.price, {from: "USD", to: currency}).toFixed(2);
             var hash = 'hc' + (parse.itemname + parse.itemtype).hashCode();
             $('#cardlist').append('<td><a target="_blank" href="http://steamcommunity.com/market/listings/753/' + jd.appid + '-' + parse.itemname + '">' + parse.itemname + '</a></td>');
-            $('#price').append('<td>' + parse.price + '</td>');
+            $('#price').append('<td>' + curpre + parse.price + cursuf + '</td>');
             $('#updated').append('<td>' + parse.updated + '</td>');
             if (cards[hash]) {
                 str = parse.itemname + ' (' + cards[hash]['quanity'] + ')';
@@ -860,4 +869,62 @@ function tableSort(){
         ],
         "aLengthMenu":[[10,50,100,-1],[10,50,100,"All"]]
     });
+}
+
+// Load exchange rates data via AJAX:
+$.getJSON(
+	// NB: using Open Exchange Rates here, but you can use any source!
+	'https://api.steamcardsheet.com/steam/js/exchange.json',
+	function(data) {
+		// Check money.js has finished loading:
+		if ( typeof fx !== "undefined" && fx.rates ) {
+			fx.rates = data.rates;
+			fx.base = data.base;
+		} else {
+			// If not, apply to fxSetup global:
+			var fxSetup = {
+				rates : data.rates,
+				base : data.base
+			}
+		}
+	}
+);
+
+function curr()
+{
+var select=document.getElementById("moneyList");
+currency=select.options[select.selectedIndex].text;
+
+curpre = '';
+cursuf = '';
+
+switch(currency)
+{
+case 'USD':
+  curpre = '&#36;';
+  break;
+case 'EUR':
+  curpre = '&#128;';
+  break;
+case 'CAD':
+  curpre = 'C$';
+  break;
+case 'GBP':
+  curpre = '&#163;';
+  break;
+case 'RUB':
+  curpre = '&#1088;';
+  break;
+case 'JPY':
+  curpre = '&#165;';
+  break;
+case 'INR':
+  curpre = '&#8377;';
+  break;
+default:
+  curpre = '';
+}
+
+//have to reset table to USD values
+redoTbl('hard');
 }

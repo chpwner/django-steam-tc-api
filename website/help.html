@@ -15,6 +15,17 @@
     location.href="index.html";
     }
   </script>
+  <script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-44186250-2']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'stats.g.doubleclick.net/dc.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+  </script>
 </head>
 <body>
 <div class="container-fluid">
@@ -27,7 +38,7 @@
               <li><a href="index.html">Steam TC Table</a></li>
               <li class="active"><a href="help.html">Help</a></li>
               <li><a href="about.html">About</a></li>
-              <li></li>
+              <li><a href="api.html">API</a></li>
             </ul>
           </div>
         </div>
@@ -68,22 +79,12 @@
       <h1>Interactive Steam Trading Card Sheet</h1>
       <h2>By Chpwner</h2>
       </div>
-      <a href="#top"></a>
-      <div id="gameinfo">
-        <table class="table table-bordered">
-        <caption id="gametitle"></caption>
-        <tbody>
-        <tr id="cardlist"></tr>
-        <tr id="price"></tr>
-        <tr id="updated"></tr>
-        <tr id="inventory"></tr>
-        </tbody>
-        </table>
-      </div>
+      <hr>
       <div class="span5" style="margin: 0px;">
       <h3>Instructions</h3>
-      <p>This site accesses <strong>public profile</strong> information from Steam to help with<br/>
-      trading card collection, including community market price integration. </p>
+      <p>This site requires a <strong>public profile</strong>, instructions can be found 
+      <a href="https://support.steampowered.com/kb_article.php?ref=4113-YUDH-6401">here</a>.
+      </p>
       <p>After table is loaded: 
       <ul>
           <li>Load a profile using form on the left</li>
@@ -104,17 +105,27 @@
       </ul>
       </p>
       <p>
-      This site uses a local cache of Steam's information, so it is not always<br/> up to date.
-      Various update buttons are located on the page to gather new information. </p>
+      This site uses a local cache of Steam's information, so it is not always up to date. <br/>
+      To update game cards and prices, click the update button located at the right of each row. <br/>
+      To update your game list, inventory, and badges use the update profile button. 
+      </p>
+      <p>Note: Your 17-digit steamid is required on initial sync, but your profile name can be used thereafter</p>
       <p>Start by loading all games into the table:</p>
       <p>
       <button class="btn btn-primary" onClick="setCookie('chpwner',1,1)">Load Page</button>
       </p>
       </div>
       <div class="span5">
-	<h3>Steam Group Page</h3>
+        <h3>NoScript Browser Plugin</h3>
+        <p>This javascript blocking software disables all forms of cross-site scripting (XSS)
+                including this site which uses the appropriate "Access-Control-Allow-Origin" header.
+        </p>
+        <p>This site make extensive use of javascript and XSS (to a subdomain of this site),
+                so disable this plugin where appropriate, the "allow this site" option does not enable XSS.
+        </p>
+	<br><h3>Steam Group Page</h3>
 	<p>A feedback forum can be found on my <a href="http://steamcommunity.com/groups/interactive-trading-card-sheet">Steam Group Page</a></p>
-	<br/><h3>Source Code</h3>
+	<br><h3>Source Code</h3>
 	<p>This project is hosted on <a href="https://github.com/chpwner/django-steam-tc-api">Github</a></p>
       </div>
      </div>
