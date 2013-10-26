@@ -792,13 +792,14 @@ function gameLookup(self) {
     for (var k in jd.cards) {
         var jsonstring = jd.cards[k];
         if (typeof (jsonstring) === "object") {
-            parse = jsonstring;
+            var parse = jsonstring;
+            parse.price = (parse.price * 1.0).toFixed(2);
         } else {
             var parse = JSON.parse(jsonstring);
+            parse.price = fx.convert(parse.price, {from: "USD", to: currency}).toFixed(2);
         }
         //skip non trading cards and foils
         if (parse.trading_card == true && parse.itemtype.indexOf('Foil') == -1) {
-            parse.price = fx.convert(parse.price, {from: "USD", to: currency}).toFixed(2);
             var hash = 'hc' + (parse.itemname + parse.itemtype).hashCode();
             $('#cardlist').append('<td><a target="_blank" href="http://steamcommunity.com/market/listings/753/' + jd.appid + '-' + parse.itemname + '">' + parse.itemname + '</a></td>');
             $('#price').append('<td>' + curpre + parse.price + cursuf + '</td>');
@@ -815,13 +816,14 @@ function gameLookup(self) {
     for (var k in jd.cards) {
         var jsonstring = jd.cards[k];
         if (typeof (jsonstring) === "object") {
-            parse = jsonstring;
+            var parse = jsonstring;
+            parse.price = (parse.price * 1.0).toFixed(2);
         } else {
             var parse = JSON.parse(jsonstring);
+            parse.price = fx.convert(parse.price, {from: "USD", to: currency}).toFixed(2);
         }
         //skip nontrading cards
         if (parse.trading_card == true && parse.itemtype.indexOf('Foil') != -1) {
-            parse.price = fx.convert(parse.price, {from: "USD", to: currency}).toFixed(2);
             var hash = 'hc' + (parse.itemname + parse.itemtype).hashCode();
             $('#cardlist').append('<td><a target="_blank" href="http://steamcommunity.com/market/listings/753/' + jd.appid + '-' + parse.itemname + '">' + parse.itemname + '</a></td>');
             $('#price').append('<td>' + curpre + parse.price + cursuf + '</td>');
