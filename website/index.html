@@ -49,12 +49,13 @@
       <input type="text" name="steamid" class="span12"><br/>
       <button type="button" class="btn" name="searchBtn" id="searchBtn" onClick="getUser(this.form)" disabled=true>Load Profile</button>
       <button type="button" class="btn" name="sub" id="sub" onClick="updateProfile(this.form)" disabled=true>Update Profile</button>
-      <select id="moneyList" onchange="curr()">
+      <select id="moneyList" onchange="curr()" class="span8">
         <option>USD</option>
         <option>EUR</option>
-        <option>CAD</option>
         <option>GBP</option>  
         <option>RUB</option>
+        <option>BRL</option>
+        <option>CAD</option>
         <option>JPY</option>
         <option>INR</option>
       </select>

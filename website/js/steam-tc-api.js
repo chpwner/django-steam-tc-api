@@ -742,7 +742,7 @@ function gameLookup(self) {
     $('#gametitle').text(gamename);
 
     //check if profile data loaded
-    if (pstore && jd.count > 0) {
+    if ($.isEmptyObject(pstore) == false && jd.count > 0) {
         //manipulate items to get assoc array of hashcodes
         //for the most part json str are goning to be the same
         //unless an update was triggered after getting composite data
@@ -783,7 +783,6 @@ function gameLookup(self) {
         } else {
             str = "<td>player has no complete sets :(</td>";
         }
-        $('#cardlist').prepend("<td>Cards</td>");
 
         var fid = 'g' + (gamename + ' (Foil)').hashCode();
         if (badgeObj[fid]) {
@@ -791,6 +790,12 @@ function gameLookup(self) {
         } else {
             str = "<td>player does not have a complete FOIL set :/</td>";
         }
+        $('#cardlist').prepend("<td>Cards</td>");
+        $('#inventory').prepend('<td><a href="http://steamcommunity.com/profiles/'+pstore.steamid+'/gamecards/'+jd.appid+'">Player</a> <a href="http://steamcommunity.com/profiles/'+pstore.steamid+'/gamecards/'+jd.appid+'/?border=1">Owns</a></td>');
+        $('#updated').prepend("<td>Updated</td>");
+        $('#price').prepend('<td><a target="_blank" href="http://steamcommunity.com/market/search?q=' + gamename + ' trading card">Market Price</a></td>');
+    }else{
+        $('#cardlist').prepend("<td>Cards</td>");
         $('#inventory').prepend('<td>Player Owns</td>');
         $('#updated').prepend("<td>Updated</td>");
         $('#price').prepend('<td><a target="_blank" href="http://steamcommunity.com/market/search?q=' + gamename + ' trading card">Market Price</a></td>');
@@ -921,14 +926,17 @@ case 'USD':
 case 'EUR':
   curpre = '&#128;';
   break;
-case 'CAD':
-  curpre = 'C$';
+case 'BRL':
+  curpre = 'R$';
   break;
 case 'GBP':
   curpre = '&#163;';
   break;
 case 'RUB':
-  curpre = '&#1088;';
+  cursuf=" &#1088;&#1091&#1073;";
+  break;
+case 'CAD':
+  curpre = 'C$';
   break;
 case 'JPY':
   curpre = '&#165;';
