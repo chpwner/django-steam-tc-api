@@ -63,6 +63,11 @@ $( document ).ready(function() {
 });
 
 function loader() {
+    //check for loaded currency table
+	if (!fx.rates[currency]){
+        alert(currency + " not found in rate table");
+        return 'error';
+	}
     $('#error').empty();
     $('#playerName').html('<h1>Viewing All Games</h1>');
     var opts = {
@@ -705,7 +710,9 @@ var tableHTML = '\
 ';
 
 //check to see if page is loaded
-if ($('#error').text()){
+var checker = $('#stage').html().trim();
+
+if (checker == ""){
 console.log("page is not loaded");
 return 'page is not loaded';
 }
@@ -896,6 +903,12 @@ function curr()
 {
 var select=document.getElementById("moneyList");
 currency=select.options[select.selectedIndex].text;
+
+//check for loaded currency table
+if (!fx.rates[currency]){
+	alert(currency + " not found in rate table");
+	return 'error';
+}
 
 curpre = '';
 cursuf = '';
