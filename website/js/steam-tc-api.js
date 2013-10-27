@@ -54,20 +54,12 @@ var c_value=escape(value) + ((exdays==null) ? "" : "; expires="+exdate.toUTCStri
 document.cookie=c_name + "=" + c_value;
 }
 
-$( document ).ready(function() {
-    var cookie = getCookie('chpwner');
-    if (cookie == 1){
-        loader();
-        setCookie('chpwner',0,1);
-    }
-});
-
 function loader() {
     //check for loaded currency table
-	if (!fx.rates[currency]){
+    if (!fx.rates[currency]){
         alert(currency + " not found in rate table");
         return 'error';
-	}
+    }
     $('#error').empty();
     $('#playerName').html('<h1>Viewing All Games</h1>');
     var opts = {
@@ -123,7 +115,7 @@ var cursuf = '';
 function webstuff(spinner, callback) {
     $.getJSON('https://api.steamcardsheet.com/data/Games/', function (games) {
         raw = games;
-	drawTbl(games);
+    drawTbl(games);
     //hide button
     //var p; is global now
     $("#toggle").click(function () {
@@ -565,18 +557,16 @@ function updatePrice(btn, callback) {
         else{
             jqRow.addClass('error');
         }
-    })
-        .fail(function (jqxhr, textStatus, error) {
+    }).fail(function (jqxhr, textStatus, error) {
             var err = textStatus + ", " + error;
             console.log("Request Failed: " + err);
             var d = new Date();
             var time = d.getTime();
             jqRow.children('td.jdtime').text(time);
             jqRow.attr('class', rowclasses);
-        })
-        .always(function () {
+    }).always(function () {
             callback(btn);
-        });
+    });
 }
 
 var error;
@@ -887,22 +877,28 @@ function tableSort(){
 
 // Load exchange rates data via AJAX:
 $.getJSON(
-	// NB: using Open Exchange Rates here, but you can use any source!
-	'https://api.steamcardsheet.com/steam/js/exchange.json',
-	function(data) {
-		// Check money.js has finished loading:
-		if ( typeof fx !== "undefined" && fx.rates ) {
-			fx.rates = data.rates;
-			fx.base = data.base;
-		} else {
-			// If not, apply to fxSetup global:
-			var fxSetup = {
-				rates : data.rates,
-				base : data.base
-			}
-		}
-	}
-);
+    // NB: using Open Exchange Rates here, but you can use any source!
+    'https://api.steamcardsheet.com/steam/js/exchange.json',
+    function(data) {
+        // Check money.js has finished loading:
+        if ( typeof fx !== "undefined" && fx.rates ) {
+            fx.rates = data.rates;
+            fx.base = data.base;
+        } else {
+            // If not, apply to fxSetup global:
+            var fxSetup = {
+                rates : data.rates,
+                base : data.base
+            }
+        }
+        
+        var cookie = getCookie('chpwner');
+        if (cookie == 1){
+            loader();
+            setCookie('chpwner',0,1);
+        }
+    }
+)
 
 function curr()
 {
@@ -911,8 +907,8 @@ currency=select.options[select.selectedIndex].text;
 
 //check for loaded currency table
 if (!fx.rates[currency]){
-	alert(currency + " not found in rate table");
-	return 'error';
+    alert(currency + " not found in rate table");
+    return 'error';
 }
 
 curpre = '';
