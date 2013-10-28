@@ -902,8 +902,12 @@ $.ajax({
         
         var cookie = getCookie('chpwner');
         if (cookie == 1){
-            loader();
-            setCookie('chpwner',0,1);
+            // same as $(document).ready()
+            // just in-case the DOM loads after this ajax call
+            $(function(){
+                loader();
+                setCookie('chpwner',0,1);
+            });
         }
 });
 
