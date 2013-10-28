@@ -3,17 +3,16 @@ import steamclass
 import apiclass
 import json
 import os.path
-import sys
 from multiset.multiset import Multiset
 
 def index(request):
     return HttpResponse("Index")
     
 def updateProfile(request):
-    def logger(count, total, file):
+    def logger(count, total, file1):
         if count % 5 == 0 or total - count < 6:
             #print count, '/', total
-            f = open(file, 'w')
+            f = open(file1, 'w')
             progress = (count / float(total)) * 100
             #print progress
             f.write(str(progress))
@@ -29,8 +28,18 @@ def updateProfile(request):
     
     count = 0
     total = 100
-    file = '/var/www/steam/logger/' + steamid
-    logger(count,total, file)
+    file1 = '/var/www/steam/logger/' + steamid
+    file2 = '/var/www/steam/logger/L-' + steamid
+
+    if os.path.isfile(file2):
+        return HttpResponse("an update is in progress", status=409)
+    else:
+        c = open(file2, 'w')
+        c.write("locked")
+        c.close()
+
+    #zero the logger
+    logger(count,total, file1)
     
     #add player to db
     player = steamclass.getPlayerInfo(steamid)
@@ -46,28 +55,29 @@ def updateProfile(request):
     'personaname':playername,
     'avatar':avatar
     }
-    apiclass.addPlayer(post)
+    #PUT functions as POST in this context
+    #apiclass.addPlayer(post)
     #update player just incase they change their avatar
     apiclass.updatePlayer(steamid, post)
     
     count = 5
-    logger(count,total, file)
+    logger(count,total, file1)
 
     #All of our itterables
     gameDic = steamclass.getPlayerGames(steamid)
     
     count = 10
-    logger(count,total, file)
+    logger(count,total, file1)
     
     itemDic = steamclass.getPlayerInventory(steamid)
     
     count = 15
-    logger(count,total, file)
+    logger(count,total, file1)
     
     badgestuff = steamclass.getPlayerBadges(steamid)
     
     count = 20
-    logger(count,total, file)
+    logger(count,total, file1)
 
     postDic = badgestuff[0]
     badgeDic = badgestuff[1]
@@ -80,7 +90,7 @@ def updateProfile(request):
     
     for game in gameDic:
         gameInv.append(str(game['appid']))
-        
+    
     for item in itemDic:
         appid = str(item['appid'])
         game = item['game']
@@ -95,11 +105,11 @@ def updateProfile(request):
 			#  be owned i.e. the person is collecting for a game they do not own, 
 			#  the usefulness of this is obtuse and I am considering removing it.
             gameInv.append(appid)
-        
+    
     for badge in postDic:
         badgeInv.append(badge['catkey']+str(badge['level']))
         #catkey is steamid+appid+1+foiled(0 or 1)+level(for this instance only)
-        
+    
     #get old lists from the database
     gamesOld = []
     itemsOld = []
@@ -111,19 +121,19 @@ def updateProfile(request):
     temp = json.loads(jsontxt)
     for i in temp:
         gamesOld.append(str(i['appid']))
-        
+    
     count = 25
-    logger(count,total, file)
-        
+    logger(count,total, file1)
+    
     ret = apiclass.call_api('GET', 'data/Items/')
     jsontxt = ret.text
     temp = json.loads(jsontxt)
     for i in temp:
         itemsOld.append(i['catkey'])
-        
+    
     count = 30
-    logger(count,total, file)
-        
+    logger(count,total, file1)
+    
     get = {
     'steamid':steamid,
     }
@@ -134,15 +144,15 @@ def updateProfile(request):
         catkey = i['catkey']
         if catkey[0:17] == steamid:
             gameInvOld.append(catkey[17:])
-            
+    
     count = 35
-    logger(count,total, file)
-            
+    logger(count,total, file1)
+    
     itemInvOld = apiclass.getInventory(steamid)
-            
+    
     count = 40
-    logger(count,total, file)
-            
+    logger(count,total, file1)
+    
     get = {
     'steamid':steamid,
     }
@@ -172,23 +182,25 @@ def updateProfile(request):
     badgeAdd = new.subtract(old)
     
     count = 50
-    logger(count,total, file)
+    logger(count,total, file1)
     
     count = 0
     total = len(gameDic)*3 + len(itemDic) + 5
-            
+    
+    verbose = []
     #add games to the games db
     for game in gameDic:
         appid = str(game['appid'])
         count = count + 1
-        logger(count, total, file)
+        logger(count, total, file1)
         if appid in gameAdd:
-            apiclass.addGame(game)
+            response = apiclass.addGame(game)
+            verbose.append('appid: ' + appid + ' game: ' + game['name'] + ' ' + response)
 
     #add games to the game inventory
     for game in gameDic:
         count = count + 1
-        logger(count, total, file)
+        logger(count, total, file1)
         
         name = game['name']
         appid = str(game['appid'])
@@ -202,7 +214,7 @@ def updateProfile(request):
         }
         if appid in gameInvAdd:
             apiclass.addGameInventory(post)
-            
+    
     #remove free trial games from inventory
     for appid in gameInvDel:
         catkey = steamid + appid
@@ -214,7 +226,7 @@ def updateProfile(request):
 
     for game in gameDic:
         count = count + 1
-        logger(count, total, file)
+        logger(count, total, file1)
         
         appid = str(game['appid'])
         name = game['name']
@@ -222,7 +234,7 @@ def updateProfile(request):
             name + "test string"
         except UnicodeEncoderError:
             name = 'unicode error'
-            
+        
         # check if the owned game has a badge
         if appid in badgeDic:
             #print i, "your game", name, "is at level", badgeDic[appid]
@@ -235,7 +247,7 @@ def updateProfile(request):
                     compare = catkey + str(post['level'])
                     if compare in badgeAdd:
                         apiclass.updateBadge(catkey, post)
-            
+        
         if appid in badgeDic2:
             #print i, "your game", name, "(FOIL) is at level", badgeDic2[appid]
             i += 1
@@ -253,7 +265,7 @@ def updateProfile(request):
     #itemDic = steamclass.getPlayerInventory(steamid)
     for item in itemDic:
         count = count + 1
-        logger(count, total, file)
+        logger(count, total, file1)
         if item['catkey'] in itemAdd:
             apiclass.addItem(item)
 
@@ -267,13 +279,13 @@ def updateProfile(request):
     add = dif['add']
     
     total = total + len(delete) + len(add) - 5
-    logger(count, total, file)
+    logger(count, total, file1)
 
     i = 1
     #delete cards
     for id in delete:
         count = count + 1
-        logger(count, total, file)
+        logger(count, total, file1)
         
         id = str(id)
         #print i, id, "deleted"
@@ -284,7 +296,7 @@ def updateProfile(request):
     i = 1    
     for item in add:
         count = count + 1
-        logger(count, total, file)
+        logger(count, total, file1)
         
         #print i, item, "added"
         #call api to add items to the items inventory
@@ -294,8 +306,10 @@ def updateProfile(request):
         }
         apiclass.call_api('POST', 'inv/ItemInventory/', data=post).text
         i += 1
-        
-    return HttpResponse("Profile Updated/Added Successfully")
+
+    #to trick the chrome browser, run a timed command separate from this script
+    os.system('sleep 30 && rm ' + file2 + ' &')
+    return HttpResponse("Profile Updated/Added Successfully")#+ ", ".join(verbose))
     
 def updatePrice(request):
     if 'game' not in request.GET:
@@ -303,7 +317,7 @@ def updatePrice(request):
     name = request.GET['game']
     if name == '':
         return HttpResponse('game not specified',status=400);
-        
+    
     query = steamclass.doMarketQuery(name, 'Trading Card')
     
     if not query:
@@ -329,5 +343,5 @@ def updatePrice(request):
         #PUT request functions as a POST in this context
         #apiclass.addItem(post)
         apiclass.updateItem(catkey, post)
-        
+    
     return HttpResponse(json.dumps(query),content_type="application/json")
