@@ -114,7 +114,7 @@ var cursuf = '';
 
 function webstuff(spinner, callback) {
     $.getJSON('https://api.steamcardsheet.com/data/Games/', function (games) {
-        raw = games;
+    raw = games;
     drawTbl(games);
     //hide button
     //var p; is global now
@@ -135,8 +135,12 @@ function webstuff(spinner, callback) {
             $("#toggle").text('Show Noncard Games');
         }
     });
-    }).fail(function (jqxhr, textStatus, error) {
-        var err = textStatus + ', ' + error;
+    }).fail(function (jqXHR, textStatus, errorThrown) {
+        var code = jqXHR.status;
+        if (code == 0){
+            errorThrown = "XSS Error";
+        }
+        var err = textStatus + ', ' + errorThrown + ', ' + code;
         $('#error').append('Request Failed ' + err);
     }).always(function(){
         spinner.stop();
@@ -317,13 +321,16 @@ function getUser(form) {
 
         //reenable buttons
         $('#sub').attr('disabled', false);
-    })
-        .fail(function (jqxhr, textStatus, error) {
-            var err = textStatus + ", " + error;
-            console.log("Request Failed: " + err);
-            form.steamid.value = "Request Failed: " + err;
-            form.searchBtn.disabled = false;
-        })
+    }).fail(function (jqXHR, textStatus, errorThrown) {
+        var code = jqXHR.status;
+        if (code == 0){
+            errorThrown = "XSS Error";
+        }
+        var err = textStatus + ', ' + errorThrown + ', ' + code;
+        $('#error').append('Request Failed ' + err);
+        form.steamid.value = "Request Failed: " + err;
+        form.searchBtn.disabled = false;
+    });
     return (true);
 }
 
@@ -557,7 +564,7 @@ function updatePrice(btn, callback) {
         else{
             jqRow.addClass('error');
         }
-    }).fail(function (jqxhr, textStatus, error) {
+    }).fail(function (jqXHR, textStatus, error) {
             var err = textStatus + ", " + error;
             console.log("Request Failed: " + err);
             var d = new Date();
@@ -608,18 +615,21 @@ function updateProfile(form) {
         form.steamid.value = steamid;
         bar.attr('style','width:100%');
         getUser(form);
-    })
-        .fail(function () {
-            alert("error loading profile");
+    }).fail(function (jqXHR, textStatus, errorThrown) {
+            var code = jqXHR.status;
+            if (code == 409){
+                errorThrown = "another update is in progress";
+            } else if (code == 0){
+                errorThrown = "XSS error"
+            }
+            var status = errorThrown + ", " + code;
+            
+            alert("Error Loading Profile: " + status + "\n\nWait 30 seconds and try again");
             error = "error";
-            form.steamid.value = "Error!";
+            form.steamid.value = "Error: " + status;
             form.sub.disabled = false;
             form.searchBtn.disabled = false;
-        })
-        .always(function () {
-            //form.sub.disabled = false;
-            //form.searchBtn.disabled = false;
-        });
+    });
 
     if (error) {
         return (false);
@@ -659,15 +669,13 @@ function ajaxCall(count) {
     $.ajax({
         url: "https://api.steamcardsheet.com/steam/logger/" + pstore.steamid,
         cache: false
-    })
-        .done(function (data) {            
+    }).done(function (data) {            
             $("#progressbar").attr('style',('width:'+data+'%;'));
             data = Number(data);
             ploader(data, count);
-        })
-        .fail(function () {
+    }).fail(function () {
             ploader(data, count);
-        });
+    });
 }
 
 function modal(){
@@ -876,10 +884,10 @@ function tableSort(){
 }
 
 // Load exchange rates data via AJAX:
-$.getJSON(
-    // NB: using Open Exchange Rates here, but you can use any source!
-    'https://api.steamcardsheet.com/steam/js/exchange.json',
-    function(data) {
+$.ajax({
+    url: 'https://api.steamcardsheet.com/steam/js/exchange.json',
+    cache: true
+}).done(function (data) {            
         // Check money.js has finished loading:
         if ( typeof fx !== "undefined" && fx.rates ) {
             fx.rates = data.rates;
@@ -897,8 +905,7 @@ $.getJSON(
             loader();
             setCookie('chpwner',0,1);
         }
-    }
-)
+});
 
 function curr()
 {
