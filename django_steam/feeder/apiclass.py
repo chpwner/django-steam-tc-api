@@ -1,20 +1,32 @@
-import sys
 import json
 import requests
 import urllib
+#import hashlib for the debug logger
 from datetime import datetime
 from multiset.multiset import Multiset
 
 def call_api(method, url, **kwargs):
     #look for '/' in catkeys, should be accounted for elsewhere
-    if 'data' in kwargs:
-       if 'catkey' in kwargs['data']:
-            if not kwargs['data']['catkey'].find('/') == -1:
-                print kwargs['data']['catkey']
+    #if 'data' in kwargs:
+    #   if 'catkey' in kwargs['data']:
+    #        if not kwargs['data']['catkey'].find('/') == -1:
+    #            print kwargs['data']['catkey']
 
     #ha ha, deleted the password
     kwargs['auth'] = ('apiadmin', '')
-    return requests.request(method, 'http://192.168.1.4:82/'+url, **kwargs)
+    ret = requests.request(method, 'http://127.0.0.1/'+url, **kwargs)
+
+    #Debug Logger
+    #u = ret.text
+    #text = u.encode('utf-8')
+    #fileH = hashlib.sha224(text).hexdigest()
+    #file1 = fileH[0:8]
+    #file1 = "apilog"
+    #f = open('/tmp/'+method+file1,'a')
+    #f.write(text+"\n")
+    #f.close()
+
+    return ret
 
 def getInventory(steamid):
     get = {

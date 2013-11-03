@@ -10,6 +10,9 @@ def index(request):
     
 def updateProfile(request):
     def logger(count, total, file1):
+        if total is 0:
+            count = 1
+            total = 1
         if count % 5 == 0 or total - count < 6:
             #print count, '/', total
             f = open(file1, 'w')
@@ -345,3 +348,19 @@ def updatePrice(request):
         apiclass.updateItem(catkey, post)
     
     return HttpResponse(json.dumps(query),content_type="application/json")
+
+def scrapeID(request):
+    if 'q' not in request.GET:
+        return HttpResponse('q not specified',status=400)
+
+    q = request.GET['q']
+
+    if q == "Not Found!" or q == "No ID entered!" or q == "Finished!" or q == "17 digit steamid required":
+        return HttpResponse('not user input',status=400)
+
+    ret = steamclass.scrapeID(q)
+
+    if ret != "0":
+        return HttpResponse(ret)
+    else:
+        return HttpResponse(ret,status=404)

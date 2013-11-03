@@ -19,13 +19,14 @@ router3.register(r'BadgeInventory', api.views.BadgeInvViewSet)
 # Additionally, we include login URLs for the browseable API.
 from django.http import HttpResponse
 urlpatterns = patterns('',
-    url(r'^$', lambda x: HttpResponse('<a href="auth/">auth</a> \
-    <a href="data/">data</a> <a href="inv/">inv</a>')),
-    url(r'^auth/', include(router.urls)),
+    url(r'^$', lambda x: HttpResponse('<a href="data/">data</a> \
+    <a href="inv/">inv</a> <a href="steam/">steam</a>')),
+    #url(r'^auth/', include(router.urls)),
     url(r'^data/', include(router2.urls)),
     url(r'^inv/', include(router3.urls)),
-    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    #url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^update/$', feeder.views.index, name="Update Index"),
     url(r'^update/profile/', feeder.views.updateProfile, name="Update Profile"),
-    url(r'^update/price/', feeder.views.updatePrice, name="Update Item Price")
+    url(r'^update/price/', feeder.views.updatePrice, name="Update Item Price"),
+    url(r'^update/getID/', feeder.views.scrapeID, name="getID")
 )

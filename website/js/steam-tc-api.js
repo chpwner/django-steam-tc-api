@@ -225,6 +225,7 @@ function drawTbl(games){
 }
 
 function validateID(InString) {
+    if (typeof(InString) === 'object') return (false);
     if (InString.length != 17) return (false);
     var RefString = "1234567890";
     for (Count = 0; Count < InString.length; Count++) {
@@ -273,13 +274,28 @@ function getUser(form) {
         if (!(profile)) {
             //reset pstore
             pstore = {}
-            //reenable buttons
-            $('#sub').attr('disabled', false);
-            form.searchBtn.disabled = false;
-            form.steamid.value = "Not Found!";
-            $('#gamecount').html('<span style="color:red">Hint: use the "Update Profile" button to add a new ID</span>');
-            return ('user not in database');
+          $.ajax({
+            url:"https://api.steamcardsheet.com/update/getID/",
+            data:{
+              'q':steamid
+            }
+          }).always(function(ret){
+            console.log(ret)
+            if(validateID(ret)){
+                form.steamid.value = ret;
+                updateProfile(form);
+                return('id scrapped');
+            }else{
+                //reenable buttons
+                $('#sub').attr('disabled', false);
+                form.searchBtn.disabled = false;
+                form.steamid.value = "Not Found!";
+                $('#gamecount').html('<span style="color:red">Hint: use the "Update Profile" button to add a new ID</span>');
+                return ('user not in database');
+            }
+          });
         }
+        else{
         pstore = profile;
         form.searchBtn.disabled = false;
         form.steamid.value = "Finished!";
@@ -321,6 +337,7 @@ function getUser(form) {
 
         //reenable buttons
         $('#sub').attr('disabled', false);
+    }
     }).fail(function (jqXHR, textStatus, errorThrown) {
         var code = jqXHR.status;
         if (code == 0){
@@ -906,7 +923,7 @@ $.ajax({
             // just in-case the DOM loads after this ajax call
             $(function(){
                 loader();
-                setCookie('chpwner',0,1);
+                //setCookie('chpwner',0,1);
             });
         }
 });

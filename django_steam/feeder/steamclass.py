@@ -29,12 +29,15 @@ def getPlayerInfo(steamid):
 def getPlayerGames(steamid):
     #rewrite URL to access GetOwnedGames from Steam API
     URL = urllib.urlopen("http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=" + apikey + "&steamid=" + steamid + "&include_appinfo=1")
-    ret = json.load(URL)
-    profileGames = ret
+    profileGames = json.load(URL)
     #json decoded object:
     #profileGames = {response{game_count:xx,games[{name:gamename,appid:gameid,images,...}]}}
     #gamecount = profileGames['response']['game_count']
     retval = []
+
+    if 'games' not in profileGames['response']:
+        return retval
+
     gameObj = profileGames['response']['games']
     for game in gameObj:
         retval.append({'appid':str(game['appid']),'name':game['name']})
@@ -96,8 +99,13 @@ def getPlayerInventory(steamid):
         classid = item['classid']
         name = item['market_name']
         gametype = item['type']
-        game = item['tags'][0]['name']
-        appid = item['tags'][0]['internal_name'][4:]
+        tags = item['tags']
+        game = None
+        appid = None
+        for temp in tags:
+            if temp['category_name'] == "Game":
+                game = temp['name']
+                appid = temp['internal_name'][4:]
 
         if gametype.find('Trading Card') > -1:
             cardflag = 'on'
@@ -269,3 +277,21 @@ def doMarketQuery(name, append):
             pass
    
     return retval
+
+def scrapeID(q):
+    q = str(q)
+    q = q.replace(" ","")
+    q = urllib.quote_plus(q)
+
+    URL = urllib.urlopen("http://steamcommunity.com/id/"+q)
+    html = URL.read()
+
+    ret = "0"
+    pos = html.find('"steamid":"')
+
+    if pos is not -1:
+        pos2 = html.find('"',pos+12)
+        diff = pos2 - pos
+        ret = html[pos+11:pos2]
+
+    return ret
