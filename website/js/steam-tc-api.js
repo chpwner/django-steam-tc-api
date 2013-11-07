@@ -754,7 +754,7 @@ function gameLookup(self) {
     //clear old data
     $('#gameinfo').find('tr').empty();
     //write title
-    $('#gametitle').text(gamename);
+    $('#gametitle').html('<a href="http://store.steampowered.com/app/'+jd.appid+'/" target="_Blank">'+gamename+'</a>');
 
     //check if profile data loaded
     if ($.isEmptyObject(pstore) == false && jd.count > 0) {
@@ -806,7 +806,7 @@ function gameLookup(self) {
             str = "<td>player does not have a complete FOIL set :/</td>";
         }
         $('#cardlist').prepend("<td>Cards</td>");
-        $('#inventory').prepend('<td><a href="http://steamcommunity.com/profiles/'+pstore.steamid+'/gamecards/'+jd.appid+'">Player</a> <a href="http://steamcommunity.com/profiles/'+pstore.steamid+'/gamecards/'+jd.appid+'/?border=1">Owns</a></td>');
+        $('#inventory').prepend('<td><a target="_Blank" href="http://steamcommunity.com/profiles/'+pstore.steamid+'/gamecards/'+jd.appid+'">Player</a> <a target="_Blank" href="http://steamcommunity.com/profiles/'+pstore.steamid+'/gamecards/'+jd.appid+'/?border=1">Owns</a></td>');
         $('#updated').prepend("<td>Updated</td>");
         $('#price').prepend('<td><a target="_blank" href="http://steamcommunity.com/market/search?q=' + gamename + ' trading card">Market Price</a></td>');
     }else{
