@@ -19,4 +19,5 @@ The website front end has the following dependencies:
 * Jquery
 * JS-Spinner
 * datatables
+* JS-NaturalSort
 * money.js
