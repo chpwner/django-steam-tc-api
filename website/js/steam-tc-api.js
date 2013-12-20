@@ -445,14 +445,15 @@ function updateTable(id) {
         for (var j in badges) {
             var badge = badges[j];
             var pos = badge.indexOf(' (Lvl:');
+            var pos2 = badge.indexOf(')',pos + 6);
             var badgename = badge.substring(0, pos);
-            var sets = badge.substring(pos + 6, pos + 7)
+            var sets = badge.substring(pos + 6, pos2)
             var idhash = 'g' + badgename.hashCode();
             badgeObj[idhash] = sets;
         }
         if (badgeObj[id]) {
             str = badgeObj[id] + " :) ".repeat(badgeObj[id]);
-            if (badgeObj[id] == 5) {
+            if (badgeObj[id] >= 5) {
                 str = "5 :D"
                 $('#' + id).addClass('success');
                 $('#' + id).children('td.percentage').text('100%')
@@ -467,14 +468,14 @@ function updateTable(id) {
 
         var fid = 'g' + (gamename + ' (Foil)').hashCode();
         if (badgeObj[fid]) {
-            str = "1 XD";
+            str = badgeObj[fid] + " XD";
             $('#' + id).children('td.ccfs').text('Maxed!');
             $('#' + id).addClass('success');
-            if (badgeObj[id] == 5) {
+            if (badgeObj[id] >= 5) {
                 $('#' + id).removeClass('success');
                 $('#' + id).addClass('warning');
                 $('#' + id).children('td.percentage').text('200%')
-                $('#' + id).children('td.lvl').text('6 ;)');
+                $('#' + id).children('td.lvl').text(((badgeObj[id]*1) + (badgeObj[fid]*1)) + ' ;)');
             }
         } else {
             str = "0";
