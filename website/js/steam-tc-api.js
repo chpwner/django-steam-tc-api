@@ -138,7 +138,7 @@ function webstuff(spinner, callback) {
     }).fail(function (jqXHR, textStatus, errorThrown) {
         var code = jqXHR.status;
         if (code == 0){
-            errorThrown = "XSS Error";
+            errorThrown = "XSS Error or Connection Timeout (server down)";
         }
         var err = textStatus + ', ' + errorThrown + ', ' + code;
         $('#error').append('Request Failed ' + err);
@@ -341,7 +341,7 @@ function getUser(form) {
     }).fail(function (jqXHR, textStatus, errorThrown) {
         var code = jqXHR.status;
         if (code == 0){
-            errorThrown = "XSS Error";
+            errorThrown = "XSS Error or Connection Timeout (server down)";
         }
         var err = textStatus + ', ' + errorThrown + ', ' + code;
         $('#error').append('Request Failed ' + err);
