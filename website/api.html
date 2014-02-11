@@ -53,7 +53,7 @@ var _gaq = _gaq || [];
     </div>
     <div class="row-fluid">
       <div class="span2" id="sidebar">
-        <img id="playerImage" src="img/logo.png" class=
+        <img id="playerImage" src="images/logo.png" class=
         "img-rounded" alt="playerImage" name="playerImage">
 		<div>
 		  Steam name or id:<br>
@@ -184,6 +184,20 @@ var _gaq = _gaq || [];
             <li>?foiled=[0|1]</li>
             <li>?level=badge-lvl</li>
           </ul>
+          <strong>Ordering Results</strong>
+          <p>To order results simply add the parameter &quot;ordering&quot; equal to the field to order by (- reverses order)<br>
+          order by ascending price:<br/>
+          &nbsp;&nbsp;&nbsp;&nbsp;<a href=
+          "https://api.steamcardsheet.com/data/Items/?game=Half-Life+2&amp;trading_card=True&amp;ordering=price">https://api.steamcardsheet.com/data/Items/?game=Half-Life+2&amp;trading_card=True&amp;ordering=price</a>
+          <br/>order by descending price:<br/>
+          &nbsp;&nbsp;&nbsp;&nbsp;<a href=
+          "https://api.steamcardsheet.com/data/Items/?game=Half-Life+2&amp;trading_card=True&amp;ordering=-price">https://api.steamcardsheet.com/data/Items/?game=Half-Life+2&amp;trading_card=True&amp;ordering=-price</a>
+          </p>
+          <p>Combo sorting is also posible separating your parameters with a comma<br/>
+          order by price then by itemname (when price is the same):<br/>
+          &nbsp;&nbsp;&nbsp;&nbsp;<a href=
+          "https://api.steamcardsheet.com/data/Items/?game=Half-Life+2&amp;trading_card=True&amp;ordering=price,itemname">https://api.steamcardsheet.com/data/Items/?game=Half-Life+2&amp;trading_card=True&amp;ordering=price,itemname</a>
+          </p>
           <h3>JSON</h3>
           <p><a href="http://en.wikipedia.org/wiki/JSON">Javascript
           Object Notation</a> (JSON) is a structured markup, like

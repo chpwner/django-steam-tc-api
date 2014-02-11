@@ -57,11 +57,15 @@ document.cookie=c_name + "=" + c_value;
 function loader() {
     //check for loaded currency table
     if (!fx.rates[currency]){
-        alert(currency + " not found in rate table");
+        alert(currency + " not found in rate table.\n\nWait a few seconds and try again.\n\nRepeated errors mean the API server is offline \nor your browser is experiencing an XSS error.\n\n");
         return 'error';
     }
     $('#error').empty();
     $('#playerName').html('<h1>Viewing All Games</h1>');
+
+    //set a cookie so the load page button only has to be clicked once
+    setCookie('chpwner',1,1);
+
     var opts = {
         lines: 13,
         // The number of lines to draw
@@ -951,7 +955,7 @@ currency=select.options[select.selectedIndex].text;
 
 //check for loaded currency table
 if (!fx.rates[currency]){
-    alert(currency + " not found in rate table");
+    alert(currency + " not found in rate table.\n\nWait a few seconds and try again.\n\nRepeated errors mean the API server is offline \nor your browser is experiencing an XSS error.\n\n");
     return 'error';
 }
 
