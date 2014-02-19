@@ -646,7 +646,7 @@ function updateProfile(form) {
             }
             var status = errorThrown + ", " + code;
             
-            alert("Error Loading Profile: " + status + "\n\nWait 30 seconds and try again");
+            alert("Error Loading Profile: " + status + "\n\nWait 30 seconds and try again\n\nFailed updates are reset after 10 minutes");
             error = "error";
             form.steamid.value = "Error: " + status;
             form.sub.disabled = false;
@@ -982,11 +982,35 @@ case 'RUB':
 case 'CAD':
   curpre = 'C$';
   break;
+case 'AUD':
+  curpre = 'A$';
+  break;
+case 'NZD':
+  curpre = 'NZ$';
+  break;
+case 'THB':
+  curpre = '&#3647;';
+  break;
+case 'NOK':
+  curpre = 'Kr';
+  break;
+case 'MXN':
+  curpre = 'M&#8369;';
+  break;
+case 'PHP':
+  curpre = '&#8369;';
+  break;
+case 'SGD':
+  curpre = 'S$';
+  break;
+case 'UAH':
+  curpre = '&#8372;';
+  break;
 case 'JPY':
   curpre = '&#165;';
   break;
-case 'INR':
-  curpre = '&#8377;';
+case 'IDR':
+  curpre = 'Rp';
   break;
 default:
   curpre = '';
