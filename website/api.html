@@ -8,9 +8,11 @@
   <title>Interactive Steam Trading Card Sheet Help</title>
   <meta name="viewport" content=
   "width=device-width, initial-scale=1.0">
-  <link href="css/bootstrap.min.css" rel="stylesheet" media=
+  <link href="css/bootstrapDark.css" rel="stylesheet" media=
   "screen" type="text/css">
   <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+  <script src="js/jquery-1.10.2.min.js"></script>
+  <script src="js/steam-tc-api.js"></script>
   <script type="text/javascript">
 var _gaq = _gaq || [];
   _gaq.push(['_setAccount', 'UA-44186250-2']);
@@ -47,6 +49,12 @@ var _gaq = _gaq || [];
               <li class="navi"><a href="about.html">About</a></li>
               <li class="navi active"><a href="api.html">API</a></li>
             </ul>
+            <div class="text-right">
+              <div class="btn-group">
+                <button type="button" id="dark" class="btn" onClick="setCSS('dark')">Dark</button>
+                <button type="button" id="light" class="btn" onClick="setCSS('light')">Light</button>
+              </div>
+           </div> 
           </div>
         </div>
       </div>

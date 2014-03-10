@@ -4,8 +4,8 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <title>Interactive Steam Trading Card Sheet</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="css/bootstrapDark.css" rel="stylesheet" media="screen" type="text/css">
   <link rel="shortcut icon" href="images/favicon.ico"/>
-  <link href="css/bootstrap.min.css" rel="stylesheet" media="screen" type="text/css">
   <script src="js/jquery-1.10.2.min.js"></script>
   <script src="js/bootstrap.min.js"></script>
   <script src="js/spin.min.js" type="text/javascript"></script>
@@ -38,7 +38,12 @@
               <li><a href="about.html">About</a></li>
               <li><a href="api.html">API</a></li>
             </ul>
-            <div class="text-right"><button type="button" id="toggle" class="btn btn-info">Show Noncard Games</button></div>
+            <div class="text-right">
+              <div class="btn-group">
+              <button type="button" id="dark" class="btn" onClick="setCSS('dark')">Dark</button>
+              <button type="button" id="light" class="btn" onClick="setCSS('light')">Light</button>
+              </div>
+              <button type="button" id="toggle" class="btn btn-info">Show Noncard Games</button></div>
           </div>
         </div>
     </div>
@@ -110,7 +115,7 @@
       <h2>By Chpwner</h2>
       </div>
       <a href="#top"></a>
-      <div id="gameinfo" style="display:none">
+      <div id="gameinfo" class="color" style="display:none">
         <table class="table table-bordered">
         <caption id="gametitle"></caption>
         <tbody>
@@ -158,12 +163,12 @@
       </p>
       <p>Color code legend: 
       <ul>
-          <li><span style="background-color:#d0e9c6">Green: Lvl 5 Badge or Lvl 1 Foil Badge</span></li>
-          <li><span style="background-color:#fcf8e3">Gold: Lvl 5 Badge and Lvl 1 Foil Badge</span></li>
-          <li><span style="background-color:#d9edf7">Blue: Market update in progress...</span></li>
-          <li><span style="background-color:#f2dede">Red: Missing trading cards,
-          the rarest cards<br/> are so rare no one has them for sale in the market</span></li>
-          <li><span style="Color:green">Green Text: >= 50% progress toward a badge</span></li>
+        <li><span class="green">Green</span>: Lvl 5 Badge or Lvl 1 Foil Badge</li>
+        <li><span class="gold">Gold</span>: Lvl 5 Badge and Lvl 1 Foil Badge</li>
+        <li><span class="blue">Blue</span>: Market update in progress...</li>
+        <li><span class="red">Red</span>: Missing trading cards,
+          the rarest cards<br/> are so rare no one has them for sale in the market</li>
+        <li><span style="Color:green">Green Text: >= 50% progress toward a badge</span></li>
       </ul>
       </p>
       <p>

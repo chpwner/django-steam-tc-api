@@ -1,21 +1,12 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <title>Interactive Steam Trading Card Sheet Help</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="css/bootstrap.min.css" rel="stylesheet" media="screen" type="text/css">
+  <link href="css/bootstrapDark.css" rel="stylesheet" media="screen" type="text/css">
   <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
-  <script type="text/javascript">
-    function setCookie(c_name,value,exdays)
-    {
-    var exdate=new Date();
-    exdate.setDate(exdate.getDate() + exdays);
-    var c_value=escape(value) + ((exdays==null) ? "" : "; expires="+exdate.toUTCString());
-    document.cookie=c_name + "=" + c_value;
-    location.href="index.html";
-    }
-  </script>
+  <script src="js/jquery-1.10.2.min.js"></script>
+  <script src="js/steam-tc-api.js"></script>
   <script type="text/javascript">
   var _gaq = _gaq || [];
   _gaq.push(['_setAccount', 'UA-44186250-2']);
@@ -41,6 +32,12 @@
               <li><a href="about.html">About</a></li>
               <li><a href="api.html">API</a></li>
             </ul>
+            <div class="text-right">
+              <div class="btn-group">
+                <button type="button" id="dark" class="btn" onClick="setCSS('dark')">Dark</button>
+                <button type="button" id="light" class="btn" onClick="setCSS('light')">Light</button>
+              </div>
+           </div> 
           </div>
         </div>
     </div>
@@ -97,12 +94,12 @@
       </p>
       <p>Color code legend: 
       <ul>
-          <li><span style="background-color:#d0e9c6">Green: Lvl 5 Badge or Lvl 1 Foil Badge</span></li>
-          <li><span style="background-color:#fcf8e3">Gold: Lvl 5 Badge and Lvl 1 Foil Badge</span></li>
-          <li><span style="background-color:#d9edf7">Blue: Market update in progress...</span></li>
-          <li><span style="background-color:#f2dede">Red: Missing trading cards,
-          the rarest cards<br/> are so rare no one has them for sale in the market</span></li>
-          <li><span style="Color:green">Green Text: >= 50% progress toward a badge</span></li>
+        <li><span class="green">Green</span>: Lvl 5 Badge or Lvl 1 Foil Badge</li>
+        <li><span class="gold">Gold</span>: Lvl 5 Badge and Lvl 1 Foil Badge</li>
+        <li><span class="blue">Blue</span>: Market update in progress...</li>
+        <li><span class="red">Red</span>: Missing trading cards,
+          the rarest cards<br/> are so rare no one has them for sale in the market</li>
+        <li><span style="Color:green">Green Text: >= 50% progress toward a badge</span></li>
       </ul>
       </p>
       <p>
@@ -110,25 +107,17 @@
       To update game cards and prices, click the update button located at the right of each row. <br/>
       To update your game list, inventory, and badges use the update profile button. 
       </p>
-      <p>A custom URL (http://steamcommunity.com/id/your-name) or your <a href="https://developer.valvesoftware.com/wiki/SteamID#External_links">17-digit steamid</a> is required on initial sync, but your profile name can be used thereafter</p>
+      <p>A custom URL (http://steamcommunity.com/id/<strong>use-this-name</strong>) or your <a href="https://developer.valvesoftware.com/wiki/SteamID#External_links">17-digit steamid</a> is required on initial sync, but your profile name can be used thereafter</p>
       <p>Start by loading all games into the table:</p>
       <p>
-      <button class="btn btn-primary" onClick="setCookie('chpwner',1,1)">Load Page</button>
+      <button class="btn btn-primary" onClick="setCookie('chpwner',1,1);location.href='index.html'">Load Page</button>
       </p>
       </div>
       <div class="span5">
-        <h3>NoScript Browser Plugin</h3>
-        <p>This javascript blocking software disables all forms of cross-site scripting (XSS)
-                including this site which uses the appropriate "Access-Control-Allow-Origin" header.
-        </p>
-        <p>This site make extensive use of javascript and XSS (to a subdomain of this site),
-                so disable this plugin where appropriate, the "allow this site" option does not enable XSS.
-        </p>
-        <p>If you're adamant on keeping this plug-in enabled you can view the non-xss site <a href="https://api.steamcardsheet.com/steam/">here</a></p>
-        <br><h3>Steam Group Page</h3>
-        <p>A feedback forum can be found on my <a href="http://steamcommunity.com/groups/interactive-trading-card-sheet">Steam Group Page</a></p>
-        <br><h3>Source Code</h3>
-        <p>This project is hosted on <a href="https://github.com/chpwner/django-steam-tc-api">Github</a></p>
+    <h3>Steam Group Page</h3>
+	<p>A feedback forum can be found on my <a href="http://steamcommunity.com/groups/interactive-trading-card-sheet">Steam Group Page</a></p>
+	<br><h3>Source Code</h3>
+	<p>This project is hosted on <a href="https://github.com/chpwner/django-steam-tc-api">Github</a></p>
       </div>
      </div>
     </div>

@@ -3,8 +3,10 @@
 <head>
   <title>Interactive Steam Trading Card Sheet Help</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="css/bootstrap.min.css" rel="stylesheet" media="screen" type="text/css">
+  <link href="css/bootstrapDark.css" rel="stylesheet" media="screen" type="text/css">
   <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+  <script src="js/jquery-1.10.2.min.js"></script>
+  <script src="js/steam-tc-api.js"></script>
   <script type="text/javascript">
   var _gaq = _gaq || [];
   _gaq.push(['_setAccount', 'UA-44186250-2']);
@@ -30,6 +32,12 @@
               <li class="active"><a href="about.html">About</a></li>
               <li><a href="api.html">API</a></li>
             </ul>
+            <div class="text-right">
+              <div class="btn-group">
+                <button type="button" id="dark" class="btn" onClick="setCSS('dark')">Dark</button>
+                <button type="button" id="light" class="btn" onClick="setCSS('light')">Light</button>
+              </div>
+           </div> 
           </div>
         </div>
     </div>
@@ -82,7 +90,9 @@
 	</p>
 	<p>
 	Bootstrap - <a href="http://getbootstrap.com">getbootstrap.com</a> - 
-	for their CSS and javascript page widgets
+  for their CSS and javascript page widgets<br/>
+  Bootswatch - <a href="http://bootswatch.com">bootswatch.com</a> - 
+  for their colorized bootstap CSS
 	</p>
 	<p>
 	spin.js - <a href="http://fgnass.github.io/spin.js/">fgnass.github.io</a> - for his js spinner animation

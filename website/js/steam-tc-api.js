@@ -890,7 +890,10 @@ function tableSort(){
         {
             /* Open this row */
             oTable.fnOpen( nTr, $('#gameinfo').clone(), "details" );
-            $(this).next().find('*').attr('style','background-color:white');
+            //Transparency Highlighting Options
+            //$(this).next().children().attr('style','background-color:transparent');
+            $(this).next().find('*').attr('style','background-color:transparent');
+            $(this).next().find('#gameinfo').attr('style','');
             console.log("open");
         }
     });    
@@ -929,24 +932,56 @@ $.ajax({
         if ( typeof fx !== "undefined" && fx.rates ) {
             fx.rates = data.rates;
             fx.base = data.base;
+            fx.settings = {
+              from : "USD",
+              to : "EUR"
+            }
         } else {
             // If not, apply to fxSetup global:
             var fxSetup = {
                 rates : data.rates,
-                base : data.base
+                base : data.base,
+                from : "USD",
+                to : "EUR"
             }
         }
         
         var cookie = getCookie('chpwner');
-        if (cookie == 1){
+        $(function(){
+          setCSS();
+          if (cookie == 1){
             // same as $(document).ready()
             // just in-case the DOM loads after this ajax call
-            $(function(){
-                loader();
-                //setCookie('chpwner',0,1);
-            });
-        }
+            loader();
+            //setCookie('chpwner',0,1);
+          }
+        });
 });
+
+function setCSS(select){
+
+  var cookie = getCookie("css");
+
+  if (select){
+   cookie = select;
+  }
+
+  $('#dark').addClass('active');
+
+  if (cookie == "light"){
+    $('#light').addClass('active');
+    $('#dark').removeClass('active');
+    $("link:first").attr("href","css/bootstrap.css");
+    setCookie("css","light",1);
+  }
+  else if (cookie == "dark"){
+    $('#dark').addClass('active');
+    $('#light').removeClass('active');
+    $("link:first").attr("href","css/bootstrapDark.css");
+    setCookie("css","dark",1);
+  }
+
+}
 
 function curr()
 {
