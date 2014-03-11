@@ -28,24 +28,24 @@ class Multiset:
         common = []
         
         #a quantity dic
-        set = {}
+        set1 = {}
         set2 = {}
         
         #set em to zero
         for key in list1:
-            set[key] = 0
+            set1[key] = 0
         for key in list2:
             set2[key] = 0
         
         #count em
         for key in list1:
-            set[key] = set[key] + 1
+            set1[key] = set1[key] + 1
         for key in list2:
             set2[key] = set2[key] + 1
         
         #look for similar keys and create an array of commons
-        for key in set:
-            value = set[key]
+        for key in set1:
+            value = set1[key]
             if key in set2:
                 value2 = set2[key]
                 if value < value2:
