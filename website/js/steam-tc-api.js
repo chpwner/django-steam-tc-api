@@ -962,33 +962,34 @@ $.ajax({
 function setCSS(select){
 
   var cookie = getCookie("css");
-  var page;
 
   if (select){
    cookie = select;
   }
 
-
   if (cookie == "light"){
-    page = "light";
+    $('#light').addClass('active');
+    $('#dark').removeClass('active');
     $("link:first").attr("href","css/bootstrap.css");
     setCookie("css","light",1);
   }
   else if (cookie == "dark"){
-    page = "dark";
+    $('#dark').addClass('active');
+    $('#light').removeClass('active');
     $("link:first").attr("href","css/bootstrapDark.css");
     setCookie("css","dark",1);
   }
 
 $(function(){
-  if (page == "light"){
-
+  if (cookie == "light"){
     $('#light').addClass('active');
     $('#dark').removeClass('active');
+    console.log("light active");
   }
   else{
     $('#dark').addClass('active');
     $('#light').removeClass('active');
+    console.log("dark active");
   }
 });
 }
