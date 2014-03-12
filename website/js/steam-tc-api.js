@@ -1,3 +1,5 @@
+setCSS();
+
 //some awesome prototypes
 //super awesome numerical hash, no really a lifesaver!
 String.prototype.hashCode = function () {
@@ -948,7 +950,6 @@ $.ajax({
         
         var cookie = getCookie('chpwner');
         $(function(){
-          setCSS();
           if (cookie == 1){
             // same as $(document).ready()
             // just in-case the DOM loads after this ajax call
@@ -961,26 +962,35 @@ $.ajax({
 function setCSS(select){
 
   var cookie = getCookie("css");
+  var page;
 
   if (select){
    cookie = select;
   }
 
-  $('#dark').addClass('active');
 
   if (cookie == "light"){
-    $('#light').addClass('active');
-    $('#dark').removeClass('active');
+    page = "light";
     $("link:first").attr("href","css/bootstrap.css");
     setCookie("css","light",1);
   }
   else if (cookie == "dark"){
-    $('#dark').addClass('active');
-    $('#light').removeClass('active');
+    page = "dark";
     $("link:first").attr("href","css/bootstrapDark.css");
     setCookie("css","dark",1);
   }
 
+$(function(){
+  if (page == "light"){
+
+    $('#light').addClass('active');
+    $('#dark').removeClass('active');
+  }
+  else{
+    $('#dark').addClass('active');
+    $('#light').removeClass('active');
+  }
+});
 }
 
 function curr()
