@@ -4,7 +4,7 @@ import json
 import urllib
 from datetime import datetime
 
-#my steam api key
+#steam api key
 apikey = ''
 
 def getPlayerInfo(steamid):
@@ -42,8 +42,9 @@ def getPlayerGames(steamid):
     for game in gameObj:
         retval.append({'appid':str(game['appid']),'name':game['name']})
     
-    #everybody has this one
+    #everybody has these
     retval.append({'appid':'245070','name':'Steam Summer Getaway'})
+    retval.append({'appid':'267420','name':'Holiday Sale 2013'})
     
     return retval
     
@@ -280,10 +281,15 @@ def doMarketQuery(name, append):
 
 def scrapeID(q):
     q = str(q)
-    q = q.replace(" ","")
-    q = urllib.quote_plus(q)
 
-    URL = urllib.urlopen("http://steamcommunity.com/id/"+q)
+    if q[0:29] == "http://steamcommunity.com/id/":
+        pass
+    else:
+        q = q.replace(" ","")
+        q = urllib.quote_plus(q)
+        q = "http://steamcommunity.com/id/" + q
+
+    URL = urllib.urlopen(q)
     html = URL.read()
 
     ret = "0"
