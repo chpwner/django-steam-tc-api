@@ -36,6 +36,7 @@ def updateProfile(request):
 
     if os.path.isfile(file2):
         return HttpResponse("an update is in progress", status=409)
+        #pass
     else:
         c = open(file2, 'w')
         c.write("locked")
@@ -355,7 +356,10 @@ def scrapeID(request):
 
     q = request.GET['q']
 
-    if q == "Not Found!" or q == "No ID entered!" or q == "Finished!" or q == "17 digit steamid required":
+    #check for bogus entries
+    if (q == "Not Found!" or q == "No ID entered!" or 
+        q == "Finished!" or q == "17 digit steamid required" or 
+        q == "Error: another update is in progress, 409"):
         return HttpResponse('not user input',status=400)
 
     ret = steamclass.scrapeID(q)
