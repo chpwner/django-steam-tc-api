@@ -58,77 +58,86 @@ def getPlayerGameList(steamid):
         retval.append(str(game['appid']))
         
     return retval
-    
+
 def getPlayerInventory(steamid):
-    # a json renderer I found on steam
-    URL = urllib.urlopen("http://steamcommunity.com/profiles/" + steamid + "/inventory/json/753/6/")
-    
-    # decode json object to dictionary
-    #
-    #has two components "rgInventory" = list of items possesed by the player by id
-    # and "rgDescriptions" has the name of the item and the id
-    # the former tells you how many items you have, 
-    # the latter the names of those items
-    inventory = json.load(URL)
- 
-    itemarray = []
-
-    #Check private profile
-    if 'rgInventory' not in inventory:
-        return itemarray
-
-    # inventory dictionary items
-    itemsDic = inventory['rgInventory']
-
-    #Check if inventory blank
-    if not itemsDic:
-        return itemarray
-
-    # k is key is the same as classid
-    # classid is steams terminology for the type of item (ie trading card)
-    # creates a list of items by their ID
-    for k, item in itemsDic.iteritems():
-        classid = item['classid']
-        itemarray.append(classid)
-
-    #now that we have the id, we need the description to link it to the name
-    names = {}
-    descriptions = inventory['rgDescriptions']
-
-    # loop through descriptions and create association to ID
-    for k, item in descriptions.iteritems():
-        classid = item['classid']
-        name = item['market_name']
-        gametype = item['type']
-        tags = item['tags']
-        game = None
-        appid = None
-        for temp in tags:
-            if temp['category_name'] == "Game":
-                game = temp['name']
-                appid = temp['internal_name'][4:]
-
-        if gametype.find('Trading Card') > -1:
-            cardflag = 'on'
-        else:
-            cardflag = ''
+    more = True
+    moreStart = 0
+    ret = []
+    while more:
+        startCMD = "?start="+str(moreStart)
+        # a json renderer I found on steam
+        URL = urllib.urlopen("http://steamcommunity.com/profiles/" + steamid + "/inventory/json/753/6/" + startCMD)
+        
+        # decode json object to dictionary
+        #
+        #has two components "rgInventory" = list of items possesed by the player by id
+        # and "rgDescriptions" has the name of the item and the id
+        # the former tells you how many items you have, 
+        # the latter the names of those items
+        inventory = json.load(URL)
+        
+        itemarray = []
+        
+        #Check private profile
+        if 'rgInventory' not in inventory:
+            return itemarray
+        
+        # inventory dictionary items
+        itemsDic = inventory['rgInventory']
+        
+        #Check if inventory blank
+        if not itemsDic:
+            return itemarray
+        
+        #get the more and morestart values for recursive pagnation navigation
+        more = inventory['more']
+        moreStart = inventory['more_start']
+        
+        # k is key is the same as classid
+        # classid is steams terminology for the type of item (ie trading card)
+        # creates a list of items by their ID
+        for k, item in itemsDic.iteritems():
+            classid = item['classid']
+            itemarray.append(classid)
+        
+        #now that we have the id, we need the description to link it to the name
+        names = {}
+        descriptions = inventory['rgDescriptions']
+        
+        # loop through descriptions and create association to ID
+        for k, item in descriptions.iteritems():
+            classid = item['classid']
+            name = item['market_name']
+            gametype = item['type']
+            tags = item['tags']
+            game = None
+            appid = None
+            for temp in tags:
+                if temp['category_name'] == "Game":
+                    game = temp['name']
+                    appid = temp['internal_name'][4:]
             
-        names[classid] = {
-        'catkey':(name+gametype).replace('/','-'),
-        'itemname':name,
-        'itemtype':gametype,
-        'game':game,
-        'trading_card':cardflag,
-        'price':0, #cannot get price here
-        'updated':datetime.now(),
-        'appid':appid
-        }
+            if gametype.find('Trading Card') > -1:
+                cardflag = 'on'
+            else:
+                cardflag = ''
+                
+            names[classid] = {
+            'catkey':(name+gametype).replace('/','-'),
+            'itemname':name,
+            'itemtype':gametype,
+            'game':game,
+            'trading_card':cardflag,
+            'price':0, #cannot get price here
+            'updated':datetime.now(),
+            'appid':appid
+            }
         
-    retval = []
-    for classid in itemarray:
-        retval.append(names[classid])
-        
-    return retval
+        #append list
+        for classid in itemarray:
+            ret.append(names[classid])
+            
+    return ret
     
 def getPlayerInventoryList(steamid):
     inventory = getPlayerInventory(steamid)
