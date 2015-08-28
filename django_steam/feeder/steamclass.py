@@ -2,9 +2,10 @@ import sys
 import re
 import json
 import urllib
+import time
 from datetime import datetime
 
-#steam api key
+#my steam api key
 apikey = ''
 
 def getPlayerInfo(steamid):
@@ -75,20 +76,20 @@ def getPlayerInventory(steamid):
         # the former tells you how many items you have, 
         # the latter the names of those items
         inventory = json.load(URL)
-        
+
         itemarray = []
-        
+
         #Check private profile
         if 'rgInventory' not in inventory:
             return itemarray
-        
+
         # inventory dictionary items
         itemsDic = inventory['rgInventory']
-        
+
         #Check if inventory blank
         if not itemsDic:
             return itemarray
-        
+
         #get the more and morestart values for recursive pagnation navigation
         more = inventory['more']
         moreStart = inventory['more_start']
@@ -99,11 +100,11 @@ def getPlayerInventory(steamid):
         for k, item in itemsDic.iteritems():
             classid = item['classid']
             itemarray.append(classid)
-        
+
         #now that we have the id, we need the description to link it to the name
         names = {}
         descriptions = inventory['rgDescriptions']
-        
+
         # loop through descriptions and create association to ID
         for k, item in descriptions.iteritems():
             classid = item['classid']
@@ -116,7 +117,7 @@ def getPlayerInventory(steamid):
                 if temp['category_name'] == "Game":
                     game = temp['name']
                     appid = temp['internal_name'][4:]
-            
+
             if gametype.find('Trading Card') > -1:
                 cardflag = 'on'
             else:
@@ -234,34 +235,41 @@ def doMarketQuery(name, append):
         safe = name.encode('utf-8')
         query = urllib.urlencode({'query': safe + append, 'start':0, 'count':99})
     except UnicodeEncodeError:
-        #print name + " had a unicode encode error"
-        query = ''
+        print "unicode encode error"
+        return retval
     
     t1 = datetime.now()
     #print "running steam market call on", name + append, "please wait..."
+    time.sleep(15) #steam is rate limited now, so we have to slow down
 
     URL = urllib.urlopen("http://steamcommunity.com/market/search/render/?"+query)
     #convert json object, essentially a count and html output
-    result = json.load(URL) 
-    #print "done with market call", datetime.now() - t1
+    try:
+        result = json.load(URL) 
+    except ValueError:
+        print "broken response from steam for game: " + safe
+        print "code", URL.getcode()
+        print "reading URL", URL.read()
+        print "info", URL.info()
+        return retval
+    print "done with market call", datetime.now() - t1
     
     result_count = result['total_count']
     html = result['results_html']
-      
-    result_count = result['total_count']
-    html = result['results_html']
-
+    
+    print "results: " + str(result_count)
+    
     #HTML EXTRACTION
     #uses regex's to parse the HTML data
     games = re.findall(r'market_listing_game_name">.*<', html)
     items = re.findall(r'market_listing_item_name".*<', html)
-    prices = re.findall(r'&#36;.*<', html)
+    prices = re.findall(r'\$.*<', html)
     
     #checks for equivicable list sizes
     a = len(games)
     b = len(items)
     c = len(prices)
-    
+
     abc = a + b + c
     valid = abc / 3
     
@@ -275,7 +283,7 @@ def doMarketQuery(name, append):
         #remove html gunk
         item = item[44:-1]
         game = game[26:-1]
-        price = price[5:-1]
+        price = price[1:-1]
         
         #check to see if query result is in fact for the game selected on player profile
         if game == name + " Trading Card" or game == name + " Foil Trading Card":
